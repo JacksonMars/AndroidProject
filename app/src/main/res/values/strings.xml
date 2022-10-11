@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">AndroidProject</string>
+    <string name="map_screen_header">Bus XYZ - Start/Destination</string>
 </resources>
