@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">AndroidProject</string>
     <string name="map_screen_header">Bus XYZ - Start/Destination</string>
+    <string name="map_next_button">View more details about XYZ</string>
 </resources>
