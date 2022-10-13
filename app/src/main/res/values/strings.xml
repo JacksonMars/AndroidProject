@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Bussy</string>
     <string name="search">Search</string>
+    <string name="search_hint">Enter a bus number or terminal stop</string>
 </resources>
