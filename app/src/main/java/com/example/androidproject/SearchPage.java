@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class SearchPage extends AppCompatActivity {
 
@@ -73,19 +74,20 @@ public class SearchPage extends AppCompatActivity {
         //Create ArrayList with routes from .txt file
         ArrayList<String> routes = new ArrayList<>();
         try {
+            //Read the file
             InputStream inputStream = getBaseContext().getResources().openRawResource(R.raw.routes);
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             bufferedReader.readLine();
             String line = bufferedReader.readLine();
 
             while (line != null) {
-                // use string.split to load a string array with the values from the line of
-                // the file, using a comma as the delimiter
+                //Use string.split to load a string array with the values from the line of
+                //the file, using a comma as the delimiter
                 String[] tokenize = line.split(",");
                 String busNum = tokenize[2];
                 String routeName = tokenize[3];
 
-                //
+                //Some bus routes have no bus number
                 String searchOption;
                 if (busNum.isEmpty()) {
                     searchOption = String.format("%s", routeName);
@@ -96,13 +98,15 @@ public class SearchPage extends AppCompatActivity {
 
                 line = bufferedReader.readLine();
             }
-
+            //Close reader, catch errors
             bufferedReader.close();
             inputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        //Sort routes
+        routes.sort(Comparator.naturalOrder());
         return routes;
     }
 }
