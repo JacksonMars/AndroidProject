@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">Bussy</string>
+    <string name="map_screen_header">Bus XYZ - Start/Destination</string>
+    <string name="map_next_button">View more details about XYZ</string>
     <string name="search">Search</string>
     <string name="search_hint">Enter a bus number or terminal stop</string>
+    <string name="button">Button</string>
+    <string name="map">Map</string>
 </resources>

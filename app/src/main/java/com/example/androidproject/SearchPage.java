@@ -1,13 +1,18 @@
 package com.example.androidproject;
 
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -36,6 +41,22 @@ public class SearchPage extends AppCompatActivity {
 
         //TODO CVERMA -- Make the terminus stations the subtitle of the list items
         listView.setAdapter(arrayAdapter);
+
+        listView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            // Override the onItemSelected method defined in AdapterView.OnItemSelectedListener
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // Get the String representation of the selected item
+                String textCountry = parent.getItemAtPosition(position).toString();
+                // Show Toast message when a country is selected
+                Toast.makeText(view.getContext(), textCountry + " is selected", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
 
     @Override
