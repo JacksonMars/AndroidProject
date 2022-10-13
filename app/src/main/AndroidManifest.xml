@@ -36,7 +36,9 @@
 
         <activity
             android:name=".SearchPage"
-            android:exported="true">
+            android:exported="true"
+            android:parentActivityName=".MainActivity">
+
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
