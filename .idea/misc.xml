@@ -13,6 +13,8 @@
         <entry key="..\:/Users/jmars/AndroidStudioProjects/AndroidProject/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/Users/jmars/AndroidStudioProjects/AndroidProject/app/src/main/res/layout/map_fragment.xml" value="0.365625" />
         <entry key="..\:/Users/jmars/AndroidStudioProjects/AndroidProject/app/src/main/res/layout/map_layout.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/bus_info_activity.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/bus_info_fragment.xml" value="0.1" />
       </map>
     </option>
   </component>

@@ -43,7 +43,7 @@ public class SearchPage extends AppCompatActivity {
             String selected_route = listView.getItemAtPosition(position).toString();
 
             // Create an intent to pass data
-            Intent intent = new Intent(view.getContext(), Map.class);
+            Intent intent = new Intent(view.getContext(), BusInfoActivity.class);
 
             // Create a bundle to store data
             Bundle bundle = new Bundle();
