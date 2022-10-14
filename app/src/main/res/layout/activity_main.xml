@@ -33,5 +33,5 @@
         android:layout_marginRight="70dp"
         android:text="@string/main_screen_text"
         android:textColor="@color/black"
-        android:textSize="20sp" />
+        android:textSize="16sp" />
 </RelativeLayout>
