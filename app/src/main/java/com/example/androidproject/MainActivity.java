@@ -14,11 +14,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button button = findViewById(R.id.map_button);
-        button.setOnClickListener(view -> {
-            Intent intent = new Intent(this, Map.class);
-            startActivity(intent);
-        });
+        Button button = findViewById(R.id.main_button);
+        button.setOnClickListener(this::startSearch);
     }
 
     public void startSearch(View view) {

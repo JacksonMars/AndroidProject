@@ -24,23 +24,23 @@
         </activity>
 
         <activity
-            android:name=".Map"
-            android:exported="true"
-            android:parentActivityName=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.VIEW" />
-            </intent-filter>
-        </activity>
-
-        <activity
             android:name=".SearchPage"
             android:exported="true"
             android:parentActivityName=".MainActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".Map"
+            android:exported="true"
+            android:parentActivityName=".SearchPage">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.VIEW" />
             </intent-filter>
         </activity>
     </application>

@@ -1,7 +1,11 @@
 <resources>
     <string name="app_name">Bussy</string>
+    <string name="logo_desc">Bussy logo</string>
     <string name="map_screen_header">Bus XYZ - Start/Destination</string>
     <string name="map_next_button">View more details about XYZ</string>
+    <string name="main_screen_text">Welcome to Bussin! Bussin allows you to search for detailed information about any bus in the Vancouver area, such as location, route information, and more. Tap the button below to get started.</string>
+    <!-- This button will lead to the search screen in the future, this is a placeholder for now -->
+    <string name="start_search">Search</string>
     <string name="search">Search</string>
     <string name="search_hint">Enter a bus number or terminal stop</string>
     <string name="button">Button</string>
