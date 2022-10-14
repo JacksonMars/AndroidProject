@@ -15,13 +15,19 @@ public class BusInfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.bus_info_activity);
 
-        Fragment busInfoFragment = new BusInfoFragment();
-
         FragmentManager fragmentManager = getSupportFragmentManager();
+
+        Fragment busInfoFragment = new BusInfoFragment();
+        Fragment scheduleFragment = new ScheduleFragment();
+
+        Fragment mapFragment = new MapFragment();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.busInfoContainer, mapFragment);
+        transaction.commit();
+
 //        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 //        fragmentTransaction.replace(R.id.busInfoContainer, busInfoFragment);
 //        fragmentTransaction.commit();
-
 
         Button btnToInfo = findViewById(R.id.btnToInfo);
         btnToInfo.setOnClickListener(view -> {
@@ -30,6 +36,19 @@ public class BusInfoActivity extends AppCompatActivity {
             fragmentTransaction1.commit();
         });
 
+        Button btnMap = findViewById(R.id.btnToMap);
+        btnMap.setOnClickListener(view -> {
+            FragmentTransaction fragmentTransaction1 = fragmentManager.beginTransaction();
+            fragmentTransaction1.replace(R.id.busInfoContainer, mapFragment);
+            fragmentTransaction1.commit();
+        });
+
+        Button btnSchedule = findViewById(R.id.btnToSchedule);
+        btnSchedule.setOnClickListener(view -> {
+            FragmentTransaction fragmentTransaction1 = fragmentManager.beginTransaction();
+            fragmentTransaction1.replace(R.id.busInfoContainer, scheduleFragment);
+            fragmentTransaction1.commit();
+        });
     }
 
 }
