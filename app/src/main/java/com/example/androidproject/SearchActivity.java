@@ -20,7 +20,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-public class SearchPage extends AppCompatActivity {
+public class SearchActivity extends AppCompatActivity {
 
     ListView listView;
     ArrayAdapter<String> arrayAdapter;
@@ -43,7 +43,7 @@ public class SearchPage extends AppCompatActivity {
             String selected_route = listView.getItemAtPosition(position).toString();
 
             // Create an intent to pass data
-            Intent intent = new Intent(view.getContext(), BusInfoActivity.class);
+            Intent intent = new Intent(view.getContext(), MainActivity.class);
 
             // Create a bundle to store data
             Bundle bundle = new Bundle();
@@ -59,17 +59,17 @@ public class SearchPage extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.menu, menu);
+        menuInflater.inflate(R.menu.search_menu, menu);
 
         MenuItem menuItem = menu.findItem(R.id.action_search);
-        SearchManager searchManager = (SearchManager) SearchPage.this.getSystemService(Context.SEARCH_SERVICE);
+        SearchManager searchManager = (SearchManager) SearchActivity.this.getSystemService(Context.SEARCH_SERVICE);
 
         SearchView searchView = null;
         if (menuItem != null) {
             searchView = (SearchView) menuItem.getActionView();
         }
         if (searchView != null) {
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(SearchPage.this.getComponentName()));
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(SearchActivity.this.getComponentName()));
             searchView.setQueryHint("Enter a bus number");
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override

@@ -4,34 +4,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="75dp"
-        app:srcCompat="@drawable/bussin_logo"
-        android:layout_centerHorizontal="true"
-        android:contentDescription="@string/logo_desc" />
-
-    <Button
-        android:id="@+id/main_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/start_search"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/main_screen_text"
-        android:layout_marginTop="75dp"/>
 
     <TextView
-        android:id="@+id/main_screen_text"
-        android:layout_width="wrap_content"
+        android:id="@+id/route"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:gravity="center"
+        android:textSize="25sp"
+        android:text=""
+        android:background="@color/buttonNotUsedButton"
+        android:textColor="@color/white"/>
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/route"
+        android:layout_above="@id/bottom_navigation" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/logo"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="70dp"
-        android:layout_marginTop="50dp"
-        android:layout_marginRight="70dp"
-        android:text="@string/main_screen_text"
-        android:textColor="@color/black"
-        android:textSize="16sp" />
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        app:itemIconTint="@android:color/darker_gray"
+        app:itemTextColor="@android:color/darker_gray"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/bottom_menu" />
 </RelativeLayout>
