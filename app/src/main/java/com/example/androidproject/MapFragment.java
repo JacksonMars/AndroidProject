@@ -66,17 +66,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
-        LatLng start = null;
+        String[] splitStart = stopCoordinates.get(0).split(",");
+        LatLng start = new LatLng(Double.parseDouble(splitStart[0]), Double.parseDouble(splitStart[1]));
         List<LatLng> path = new ArrayList<>();
 
-        for(int i = 0; i < stopCoordinates.size() - 1; i++) {
-            String startCoords = stopCoordinates.get(i);
-            String endCoords = stopCoordinates.get(i + 1);
-            if(start == null) {
-                String[] tokenized = startCoords.split(",");
-                start = new LatLng(Float.parseFloat(tokenized[0]), Float.parseFloat(tokenized[1]));
+        for(int i = 0; i < stopCoordinates.size(); i+=9) {
+            if(i <= stopCoordinates.size() - 10) {
+                addToRoute(stopCoordinates.subList(i, i + 10), path);
+            } else {
+                addToRoute(stopCoordinates.subList(i, stopCoordinates.size()), path);
             }
-            addToRoute(startCoords, endCoords, path);
         }
 
         if(path.size() > 0) {
@@ -87,11 +86,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(start, 13));
     }
 
-    private void addToRoute(String location1, String location2, List<LatLng> path) {
+    private void addToRoute(List<String> allCoordinates, List<LatLng> path) {
         GeoApiContext context = new GeoApiContext.Builder()
-                .apiKey("Api key goes here")
+                .apiKey("YOUR API KEY")
                 .build();
-        DirectionsApiRequest req = DirectionsApi.getDirections(context, location1, location2).mode(TravelMode.TRANSIT);
+
+        List<String> waypoints = allCoordinates.subList(1, allCoordinates.size());
+        DirectionsApiRequest req = DirectionsApi.getDirections(context, allCoordinates.get(0), allCoordinates.get(allCoordinates.size() - 1)).waypoints(waypoints.toArray(new String[0]));
 
         try {
             DirectionsResult res = req.await();
