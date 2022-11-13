@@ -10,7 +10,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -21,7 +20,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TreeSet;
 
 public class SearchRouteActivity extends AppCompatActivity {
@@ -33,11 +34,14 @@ public class SearchRouteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_route);
 
-        ArrayList<String> routes = getRoutes();
+        HashMap<String, String> routes = mapRouteStringsToRouteIds();
+        Set<String> routesKeySet = routes.keySet();
+        ArrayList<String> routeStrings = new ArrayList<>(routesKeySet);
+        routeStrings.sort(Comparator.naturalOrder());
         final LoadingDialog loadingDialog = new LoadingDialog(SearchRouteActivity.this);
 
         //Create adapter for routes listview
-        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, routes);
+        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, routeStrings);
         listView = findViewById(R.id.route_search_results);
 
         listView.setAdapter(arrayAdapter);
@@ -47,28 +51,35 @@ public class SearchRouteActivity extends AppCompatActivity {
 
             // using handler class to set time delay methods
             Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    // Get value for selected list item
-                    String selectedRoute = listView.getItemAtPosition(position).toString();
-                    ArrayList<String> stops = getStopsForRoute(selectedRoute);
+            handler.postDelayed(() -> {
+                // Get values for selected list item
+                String selectedRoute = listView.getItemAtPosition(position).toString();
+                String routeId = routes.get(selectedRoute); // Route id
+                TreeSet<String> tripIds = getTripIds(routeId); // Trip ids for this route
+                HashMap<String, String> stopIdTripIdMap = mapStopIdsToTripIds(tripIds); // Map stop ids for route's trips
+                HashMap<String, String> stops = mapStopStringsToStopIds(stopIdTripIdMap.keySet()); // Map stop strings to ids
 
-                    // Create an intent to pass data
-                    Intent intent = new Intent(view.getContext(), SearchStopActivity.class);
+                // Put stop strings in ArrayList, sort
+                Set<String> stopsKeySet = stops.keySet();
+                ArrayList<String> stopStrings = new ArrayList<>(stopsKeySet);
+                stopStrings.sort(Comparator.naturalOrder());
 
-                    // Create a bundle to store data
-                    Bundle bundle = new Bundle();
-                    bundle.putString("route", selectedRoute);
-                    bundle.putStringArrayList("stops", stops);
-                    intent.putExtra("bundle", bundle);
+                // Create an intent to pass data
+                Intent intent = new Intent(view.getContext(), SearchStopActivity.class);
 
-                    // Close loading dialog
-                    loadingDialog.dismissDialog();
+                // Create a bundle to store data
+                Bundle bundle = new Bundle();
+                bundle.putString("route", selectedRoute);
+                bundle.putStringArrayList("stopStrings", stopStrings);
+                bundle.putSerializable("stopIdTripIdMap", stopIdTripIdMap);
+                bundle.putSerializable("stops", stops);
+                intent.putExtra("bundle", bundle);
 
-                    // Go to stop selection
-                    startActivity(intent);
-                }
+                // Close loading dialog
+                loadingDialog.dismissDialog();
+
+                // Go to stop selection
+                startActivity(intent);
             }, 0);
         });
 
@@ -107,61 +118,11 @@ public class SearchRouteActivity extends AppCompatActivity {
     }
 
     /**
-     * Return an ArrayList containing all TransLink routes.
-     * @return an ArrayList containing all TransLink routes
+     * Map route strings (route number + route name) to their route ids.
+     * @return HashMap of route strings mapped to route ids
      */
-    public ArrayList<String> getRoutes() {
-        //Create ArrayList with routes from .txt file
-        ArrayList<String> routes = new ArrayList<>();
-        try {
-            //Read the file
-            InputStream inputStream = getBaseContext().getResources().openRawResource(R.raw.routes);
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            bufferedReader.readLine();
-            String line = bufferedReader.readLine();
-
-            while (line != null) {
-                //Use string.split to load a string array with the values from the line of
-                //the file, using a comma as the delimiter
-                String[] tokenize = line.split(",");
-                String busNum = tokenize[2];
-                String routeName = tokenize[3];
-
-                //Some bus routes have no bus number
-                String searchOption;
-                if (busNum.isEmpty()) {
-                    searchOption = String.format("%s", routeName);
-                } else {
-                    searchOption = String.format("%s: %s", busNum, routeName);
-                }
-                routes.add(searchOption);
-
-                line = bufferedReader.readLine();
-            }
-            //Close reader, catch errors
-            bufferedReader.close();
-            inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        //Sort routes
-        routes.sort(Comparator.naturalOrder());
-        return routes;
-    }
-
-    /**
-     * Extracts route id from a given route name.
-     * @param route a String
-     * @return route id as a String
-     */
-    public String getRouteId(String route) {
-        String selectedRouteName;
-        if (route.contains(":")) {
-            selectedRouteName = route.split(": ")[1];
-        } else {
-            selectedRouteName = route;
-        }
+    public HashMap<String, String> mapRouteStringsToRouteIds() {
+        HashMap<String, String> routes = new HashMap<>();
 
         try {
             //Read the file
@@ -175,12 +136,17 @@ public class SearchRouteActivity extends AppCompatActivity {
                 //the file, using a comma as the delimiter
                 String[] tokenize = line.split(",");
                 String routeId = tokenize[0];
+                String busNum = tokenize[2];
                 String routeName = tokenize[3];
 
-                if (Objects.equals(selectedRouteName, routeName)) {
-                    Toast.makeText(this.getBaseContext(), routeId, Toast.LENGTH_LONG).show();
-                    return routeId;
+                //Some bus routes have no bus number
+                String routeString;
+                if (busNum.isEmpty()) {
+                    routeString = String.format("%s", routeName);
+                } else {
+                    routeString = String.format("%s: %s", busNum, routeName);
                 }
+                routes.put(routeString, routeId);
 
                 line = bufferedReader.readLine();
             }
@@ -190,8 +156,8 @@ public class SearchRouteActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Toast.makeText(this.getBaseContext(), "No id obtained", Toast.LENGTH_LONG).show();
-        return "";
+
+        return routes;
     }
 
     /**
@@ -231,12 +197,12 @@ public class SearchRouteActivity extends AppCompatActivity {
     }
 
     /**
-     * Get stop ids corresponding to given trip ids.
+     * Map stop ids to their trip ids.
      * @param tripIds a TreeSet
-     * @return a TreeSet containing stop ids
+     * @return a Hashmap of stop ids mapped to trip ids
      */
-    public TreeSet<String> getStopIds(TreeSet<String> tripIds) {
-        TreeSet<String> stopIds = new TreeSet<>();
+    public HashMap<String, String> mapStopIdsToTripIds(TreeSet<String> tripIds) {
+        HashMap<String, String> stopTripMap = new HashMap<>();
         try {
             //Read the file
             InputStream inputStream = getBaseContext().getResources().openRawResource(R.raw.stop_times);
@@ -252,7 +218,7 @@ public class SearchRouteActivity extends AppCompatActivity {
                 String stopId = tokenize[3];
 
                 if (tripIds.contains(tripId)) {
-                    stopIds.add(stopId);
+                    stopTripMap.put(stopId, tripId);
                 }
 
                 line = bufferedReader.readLine();
@@ -263,7 +229,7 @@ public class SearchRouteActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return stopIds;
+        return stopTripMap;
     }
 
     /**
@@ -271,9 +237,9 @@ public class SearchRouteActivity extends AppCompatActivity {
      * @param stopIds a TreeSet
      * @return a TreeSet of stop names
      */
-    public ArrayList<String> getStops(TreeSet<String> stopIds) {
-        //Create ArrayList with routes from .txt file
-        ArrayList<String> stops = new ArrayList<>();
+    public HashMap<String, String> mapStopStringsToStopIds(Set<String> stopIds) {
+        HashMap<String, String> stopStringStopIdMap = new HashMap<>();
+
         try {
             //Read the file
             InputStream inputStream = getBaseContext().getResources().openRawResource(R.raw.stops);
@@ -290,8 +256,8 @@ public class SearchRouteActivity extends AppCompatActivity {
                 String stopName = tokenize[2];
 
                 if (stopIds.contains(stopId)) {
-                    String stop = String.format("%s: %s", stopCode, stopName);
-                    stops.add(stop);
+                    String stopString = String.format("%s: %s", stopCode, stopName);
+                    stopStringStopIdMap.put(stopString, stopId);
                 }
                 line = bufferedReader.readLine();
             }
@@ -302,15 +268,6 @@ public class SearchRouteActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        //Sort routes
-        stops.sort(Comparator.naturalOrder());
-        return stops;
-    }
-
-    public ArrayList<String> getStopsForRoute (String route) {
-        String routeId = getRouteId(route);
-        TreeSet<String> tripIds = getTripIds(routeId);
-        TreeSet<String> stopIds = getStopIds(tripIds);
-        return getStops(stopIds);
+        return stopStringStopIdMap;
     }
 }

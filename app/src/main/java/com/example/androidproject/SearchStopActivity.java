@@ -37,7 +37,7 @@ public class SearchStopActivity extends AppCompatActivity {
 
         // Option 2: Extract data from bundle
         Bundle bundle = intent.getBundleExtra("bundle");
-        ArrayList<String> stops = bundle.getStringArrayList("stops");
+        ArrayList<String> stops = bundle.getStringArrayList("stopStrings");
 
         //Create adapter for routes listview
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, stops);
@@ -50,24 +50,21 @@ public class SearchStopActivity extends AppCompatActivity {
 
             // using handler class to set time delay methods
             Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    // Get value for selected list item
-                    String selected_route = listView.getItemAtPosition(position).toString();
+            handler.postDelayed(() -> {
+                // Get value for selected list item
+                String selected_route = listView.getItemAtPosition(position).toString();
 
-                    // Create an intent to pass data
-                    Intent newIntent = new Intent(view.getContext(), MainActivity.class);
+                // Create an intent to pass data
+                Intent newIntent = new Intent(view.getContext(), MainActivity.class);
 
-                    // Create a bundle to store data
-                    newIntent.putExtra("bundle", bundle);
+                // Create a bundle to store data
+                newIntent.putExtra("bundle", bundle);
 
-                    // Close loading dialog
-                    loadingDialog.dismissDialog();
+                // Close loading dialog
+                loadingDialog.dismissDialog();
 
-                    // Go to Map
-                    startActivity(newIntent);
-                }
+                // Go to Map
+                startActivity(newIntent);
             }, 0);
         });
     }
