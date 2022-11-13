@@ -23,7 +23,7 @@
 
         <meta-data
             android:name="android.app.lib_name"
-            android:value="AIzaSyATMqmYEWAZZZP35IxLtMwh6YdAOGba_58" />
+            android:value="AIzaSyA7B8cf57CuID9r8WHJCkmWa4P-cCGQNMo" />
 
         <activity
             android:name=".SplashActivity"

@@ -4,6 +4,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -22,6 +23,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.TreeSet;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -33,6 +35,7 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
 
         ArrayList<String> routes = getRoutes();
+        final LoadingDialog loadingDialog = new LoadingDialog(SearchActivity.this);
 
         //Create adapter for routes listview
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, routes);
@@ -42,24 +45,33 @@ public class SearchActivity extends AppCompatActivity {
         listView.setAdapter(arrayAdapter);
 
         listView.setOnItemClickListener((adapterView, view, position, l) -> {
-            // Get value for selected list item
-            String selectedRoute = listView.getItemAtPosition(position).toString();
-            String routeId = getRouteId(selectedRoute);
-            ArrayList<String> tripIds = getTripIds(routeId);
-            ArrayList<String> stopIds = getStopIds(tripIds);
-            ArrayList<String> stops = getStops(stopIds);
+            loadingDialog.startLoadingDialog();
 
-            // Create an intent to pass data
-            Intent intent = new Intent(view.getContext(), SearchStopActivity.class);
+            // using handler class to set time delay methods
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    // Get value for selected list item
+                    String selectedRoute = listView.getItemAtPosition(position).toString();
+                    ArrayList<String> stops = getStopsForRoute(selectedRoute);
 
-            // Create a bundle to store data
-            Bundle bundle = new Bundle();
-            bundle.putString("route", selectedRoute);
-            bundle.putStringArrayList("stops", stops);
-            intent.putExtra("bundle", bundle);
+                    // Create an intent to pass data
+                    Intent intent = new Intent(view.getContext(), SearchStopActivity.class);
 
-            // Go to Map
-            startActivity(intent);
+                    // Create a bundle to store data
+                    Bundle bundle = new Bundle();
+                    bundle.putString("route", selectedRoute);
+                    bundle.putStringArrayList("stops", stops);
+                    intent.putExtra("bundle", bundle);
+
+                    // Close loading dialog
+                    loadingDialog.dismissDialog();
+
+                    // Go to Map
+                    startActivity(intent);
+                }
+            }, 0);
         });
 
     }
@@ -96,6 +108,10 @@ public class SearchActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    /**
+     * Return an ArrayList containing all TransLink routes.
+     * @return an ArrayList containing all TransLink routes
+     */
     public ArrayList<String> getRoutes() {
         //Create ArrayList with routes from .txt file
         ArrayList<String> routes = new ArrayList<>();
@@ -136,6 +152,11 @@ public class SearchActivity extends AppCompatActivity {
         return routes;
     }
 
+    /**
+     * Extracts route id from a given route name.
+     * @param route a String
+     * @return route id as a String
+     */
     public String getRouteId(String route) {
         String selectedRouteName;
         if (route.contains(":")) {
@@ -175,8 +196,13 @@ public class SearchActivity extends AppCompatActivity {
         return "";
     }
 
-    public ArrayList<String> getTripIds(String routeId) {
-        ArrayList<String> tripIds = new ArrayList<>();
+    /**
+     * Returns a TreeSet of trip ids for a given route.
+     * @param routeId a String
+     * @return TreeSet of trip ids
+     */
+    public TreeSet<String> getTripIds(String routeId) {
+        TreeSet<String> tripIds = new TreeSet<>();
         try {
             //Read the file
             InputStream inputStream = getBaseContext().getResources().openRawResource(R.raw.trips);
@@ -206,8 +232,13 @@ public class SearchActivity extends AppCompatActivity {
         return tripIds;
     }
 
-    public ArrayList<String> getStopIds(ArrayList<String> tripIds) {
-        ArrayList<String> stopIds = new ArrayList<>();
+    /**
+     * Get stop ids corresponding to given trip ids.
+     * @param tripIds a TreeSet
+     * @return a TreeSet containing stop ids
+     */
+    public TreeSet<String> getStopIds(TreeSet<String> tripIds) {
+        TreeSet<String> stopIds = new TreeSet<>();
         try {
             //Read the file
             InputStream inputStream = getBaseContext().getResources().openRawResource(R.raw.stop_times);
@@ -237,7 +268,12 @@ public class SearchActivity extends AppCompatActivity {
         return stopIds;
     }
 
-    public ArrayList<String> getStops(ArrayList<String> stopIds) {
+    /**
+     * Return a TreeSet of stop names from a set of stop ids.
+     * @param stopIds a TreeSet
+     * @return a TreeSet of stop names
+     */
+    public ArrayList<String> getStops(TreeSet<String> stopIds) {
         //Create ArrayList with routes from .txt file
         ArrayList<String> stops = new ArrayList<>();
         try {
@@ -271,5 +307,12 @@ public class SearchActivity extends AppCompatActivity {
         //Sort routes
         stops.sort(Comparator.naturalOrder());
         return stops;
+    }
+
+    public ArrayList<String> getStopsForRoute (String route) {
+        String routeId = getRouteId(route);
+        TreeSet<String> tripIds = getTripIds(routeId);
+        TreeSet<String> stopIds = getStopIds(tripIds);
+        return getStops(stopIds);
     }
 }
