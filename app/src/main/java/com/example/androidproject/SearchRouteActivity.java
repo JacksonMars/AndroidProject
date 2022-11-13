@@ -59,18 +59,12 @@ public class SearchRouteActivity extends AppCompatActivity {
                 HashMap<String, String> stopIdTripIdMap = mapStopIdsToTripIds(tripIds); // Map stop ids for route's trips
                 HashMap<String, String> stops = mapStopStringsToStopIds(stopIdTripIdMap.keySet()); // Map stop strings to ids
 
-                // Put stop strings in ArrayList, sort
-                Set<String> stopsKeySet = stops.keySet();
-                ArrayList<String> stopStrings = new ArrayList<>(stopsKeySet);
-                stopStrings.sort(Comparator.naturalOrder());
-
                 // Create an intent to pass data
                 Intent intent = new Intent(view.getContext(), SearchStopActivity.class);
 
                 // Create a bundle to store data
                 Bundle bundle = new Bundle();
                 bundle.putString("route", selectedRoute);
-                bundle.putStringArrayList("stopStrings", stopStrings);
                 bundle.putSerializable("stopIdTripIdMap", stopIdTripIdMap);
                 bundle.putSerializable("stops", stops);
                 intent.putExtra("bundle", bundle);

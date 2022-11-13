@@ -28,13 +28,13 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle bundle = intent.getBundleExtra("bundle");
         String route = bundle.getString("route");
+        String tripId = bundle.getString("tripId");
         TextView textView = findViewById(R.id.route);
         textView.setText(route);
 
         // Set bottom navbar
         BottomNavigationView bottomNavigationView= findViewById(R.id.bottom_navigation);
 
-        String tripId = getTripId("30039");
         ArrayList<String> stopIds = getStopIds(tripId);
         ArrayList<String> allCoordinates = allStopCoordinates(stopIds);
 
@@ -69,32 +69,6 @@ public class MainActivity extends AppCompatActivity {
             }
             return false;
         });
-    }
-
-    public String getTripId(String intendedRouteId) {
-        String tripId =  null;
-        try {
-            InputStream inputStream = getBaseContext().getResources().openRawResource(R.raw.trips);
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            bufferedReader.readLine();
-            String line = bufferedReader.readLine();
-
-            while(line != null && tripId == null) {
-                String[] tokenize = line.split(",");
-                String routeId = tokenize[0];
-                if(routeId.equals(intendedRouteId)) {
-                    tripId = tokenize[2];
-                }
-                line = bufferedReader.readLine();
-            }
-
-            bufferedReader.close();
-            inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return tripId;
     }
 
     public ArrayList<String> getStopIds(String intendedTripId) {

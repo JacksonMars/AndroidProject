@@ -14,12 +14,10 @@ import android.widget.ListView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Set;
 
 public class SearchStopActivity extends AppCompatActivity {
 
@@ -37,10 +35,16 @@ public class SearchStopActivity extends AppCompatActivity {
 
         // Option 2: Extract data from bundle
         Bundle bundle = intent.getBundleExtra("bundle");
-        ArrayList<String> stops = bundle.getStringArrayList("stopStrings");
+        HashMap<String, String> stopIdTripIdMap = (HashMap<String, String>) bundle.getSerializable("stopIdTripIdMap");
+        HashMap<String, String> stops = (HashMap<String, String>) bundle.getSerializable("stops");
+
+        // Put stop strings in ArrayList, sort
+        Set<String> stopsKeySet = stops.keySet();
+        ArrayList<String> stopStrings = new ArrayList<>(stopsKeySet);
+        stopStrings.sort(Comparator.naturalOrder());
 
         //Create adapter for routes listview
-        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, stops);
+        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, stopStrings);
         listView = findViewById(R.id.stop_search_results);
         listView.setAdapter(arrayAdapter);
 
@@ -51,11 +55,16 @@ public class SearchStopActivity extends AppCompatActivity {
             // using handler class to set time delay methods
             Handler handler = new Handler();
             handler.postDelayed(() -> {
-                // Get value for selected list item
-                String selected_route = listView.getItemAtPosition(position).toString();
+                // Get values for selected list item
+                String selectedStop = listView.getItemAtPosition(position).toString();
+                String stopId = stops.get(selectedStop); // Stop id
+                String tripId = stopIdTripIdMap.get(stopId); // Trip id
 
                 // Create an intent to pass data
                 Intent newIntent = new Intent(view.getContext(), MainActivity.class);
+
+                // Put new info in bundle
+                bundle.putString("tripId", tripId);
 
                 // Create a bundle to store data
                 newIntent.putExtra("bundle", bundle);
