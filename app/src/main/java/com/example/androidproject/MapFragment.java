@@ -89,7 +89,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private void addToRoute(String location1, String location2, List<LatLng> path) {
         GeoApiContext context = new GeoApiContext.Builder()
-                .apiKey("Your API key goes here")
+                .apiKey("AIzaSyATMqmYEWAZZZP35IxLtMwh6YdAOGba_58")
                 .build();
         DirectionsApiRequest req = DirectionsApi.getDirections(context, location1, location2).mode(TravelMode.TRANSIT);
 

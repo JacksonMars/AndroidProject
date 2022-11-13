@@ -23,7 +23,7 @@
 
         <meta-data
             android:name="android.app.lib_name"
-            android:value="" />
+            android:value="AIzaSyATMqmYEWAZZZP35IxLtMwh6YdAOGba_58" />
 
         <activity
             android:name=".SplashActivity"
@@ -49,6 +49,16 @@
         <activity
             android:name=".SearchActivity"
             android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".SearchStopActivity"
+            android:exported="true"
+            android:parentActivityName=".SearchStopActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
