@@ -19,29 +19,27 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.TreeSet;
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchRouteActivity extends AppCompatActivity {
 
     ListView listView;
     ArrayAdapter<String> arrayAdapter;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search);
+        setContentView(R.layout.activity_search_route);
 
         ArrayList<String> routes = getRoutes();
-        final LoadingDialog loadingDialog = new LoadingDialog(SearchActivity.this);
+        final LoadingDialog loadingDialog = new LoadingDialog(SearchRouteActivity.this);
 
         //Create adapter for routes listview
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, routes);
         listView = findViewById(R.id.route_search_results);
 
-        //TODO CVERMA -- Make the terminus stations the subtitle of the list items
         listView.setAdapter(arrayAdapter);
 
         listView.setOnItemClickListener((adapterView, view, position, l) -> {
@@ -68,7 +66,7 @@ public class SearchActivity extends AppCompatActivity {
                     // Close loading dialog
                     loadingDialog.dismissDialog();
 
-                    // Go to Map
+                    // Go to stop selection
                     startActivity(intent);
                 }
             }, 0);
@@ -82,14 +80,14 @@ public class SearchActivity extends AppCompatActivity {
         menuInflater.inflate(R.menu.search_menu, menu);
 
         MenuItem menuItem = menu.findItem(R.id.action_search);
-        SearchManager searchManager = (SearchManager) SearchActivity.this.getSystemService(Context.SEARCH_SERVICE);
+        SearchManager searchManager = (SearchManager) SearchRouteActivity.this.getSystemService(Context.SEARCH_SERVICE);
 
         SearchView searchView = null;
         if (menuItem != null) {
             searchView = (SearchView) menuItem.getActionView();
         }
         if (searchView != null) {
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(SearchActivity.this.getComponentName()));
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(SearchRouteActivity.this.getComponentName()));
             searchView.setQueryHint("Enter a bus number");
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override

@@ -4,6 +4,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -29,6 +30,8 @@ public class SearchStopActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_stop);
 
+        final LoadingDialog loadingDialog = new LoadingDialog(SearchStopActivity.this);
+
         // Get the intent
         Intent intent = getIntent();
 
@@ -42,21 +45,31 @@ public class SearchStopActivity extends AppCompatActivity {
         listView.setAdapter(arrayAdapter);
 
         listView.setOnItemClickListener((adapterView, view, position, l) -> {
-            // Get value for selected list item
-            String selected_route = listView.getItemAtPosition(position).toString();
 
-            // Create an intent to pass data
-            Intent newIntent = new Intent(view.getContext(), SearchStopActivity.class);
+            loadingDialog.startLoadingDialog();
 
-            // Create a bundle to store data
-            Bundle newBundle = new Bundle();
-            newBundle.putString("route", selected_route);
-            intent.putExtra("bundle", newBundle);
+            // using handler class to set time delay methods
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    // Get value for selected list item
+                    String selected_route = listView.getItemAtPosition(position).toString();
 
-            // Go to Map
-            startActivity(newIntent);
+                    // Create an intent to pass data
+                    Intent newIntent = new Intent(view.getContext(), MainActivity.class);
+
+                    // Create a bundle to store data
+                    newIntent.putExtra("bundle", bundle);
+
+                    // Close loading dialog
+                    loadingDialog.dismissDialog();
+
+                    // Go to Map
+                    startActivity(newIntent);
+                }
+            }, 0);
         });
-
     }
 
     @Override
@@ -89,45 +102,5 @@ public class SearchStopActivity extends AppCompatActivity {
         }
 
         return super.onCreateOptionsMenu(menu);
-    }
-
-    public ArrayList<String> getRoutes() {
-        //Create ArrayList with routes from .txt file
-        ArrayList<String> routes = new ArrayList<>();
-        try {
-            //Read the file
-            InputStream inputStream = getBaseContext().getResources().openRawResource(R.raw.routes);
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            bufferedReader.readLine();
-            String line = bufferedReader.readLine();
-
-            while (line != null) {
-                //Use string.split to load a string array with the values from the line of
-                //the file, using a comma as the delimiter
-                String[] tokenize = line.split(",");
-                String busNum = tokenize[2];
-                String routeName = tokenize[3];
-
-                //Some bus routes have no bus number
-                String searchOption;
-                if (busNum.isEmpty()) {
-                    searchOption = String.format("%s", routeName);
-                } else {
-                    searchOption = String.format("%s: %s", busNum, routeName);
-                }
-                routes.add(searchOption);
-
-                line = bufferedReader.readLine();
-            }
-            //Close reader, catch errors
-            bufferedReader.close();
-            inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        //Sort routes
-        routes.sort(Comparator.naturalOrder());
-        return routes;
     }
 }

@@ -17,7 +17,7 @@ public class SplashActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).hide();
 
         new Handler().postDelayed(() -> {
-            Intent mainIntent = new Intent(SplashActivity.this, SearchActivity.class);
+            Intent mainIntent = new Intent(SplashActivity.this, SearchRouteActivity.class);
             SplashActivity.this.startActivity(mainIntent);
             SplashActivity.this.finish();
         }, 2000);
