@@ -43,10 +43,10 @@ public class SearchRouteActivity extends AppCompatActivity {
         //Create adapter for routes listview
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, routeStrings);
         listView = findViewById(R.id.route_search_results);
-
         listView.setAdapter(arrayAdapter);
 
         listView.setOnItemClickListener((adapterView, view, position, l) -> {
+
             loadingDialog.startLoadingDialog();
 
             // using handler class to set time delay methods

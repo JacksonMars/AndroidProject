@@ -16,7 +16,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.DirectionsApi;
 import com.google.maps.DirectionsApiRequest;
@@ -26,14 +25,8 @@ import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.DirectionsStep;
 import com.google.maps.model.EncodedPolyline;
-import com.google.maps.model.TravelMode;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
@@ -52,11 +45,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         View view=inflater.inflate(R.layout.map_fragment, container, false);
 
         // Initialize map fragment
-        mapFragment = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapAPI));
+        mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapAPI);
 
         // Async map
         assert mapFragment != null;
-        // Async map
         mapFragment.getMapAsync(this);
 
         // Return view
@@ -88,7 +80,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private void addToRoute(List<String> allCoordinates, List<LatLng> path) {
         GeoApiContext context = new GeoApiContext.Builder()
-                .apiKey("YOUR API KEY")
+                .apiKey("API")
                 .build();
 
         List<String> waypoints = allCoordinates.subList(1, allCoordinates.size());

@@ -2,6 +2,7 @@ package com.example.androidproject;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -24,51 +25,62 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Get information from search bundle
-        Intent intent = getIntent();
-        Bundle bundle = intent.getBundleExtra("bundle");
-        String route = bundle.getString("route");
-        String tripId = bundle.getString("tripId");
-        TextView textView = findViewById(R.id.route);
-        textView.setText(route);
+        final LoadingDialog loadingDialog = new LoadingDialog(MainActivity.this);
 
-        // Set bottom navbar
-        BottomNavigationView bottomNavigationView= findViewById(R.id.bottom_navigation);
+        loadingDialog.startLoadingDialog();
 
-        ArrayList<String> stopIds = getStopIds(tripId);
-        ArrayList<String> allCoordinates = allStopCoordinates(stopIds);
+        // using handler class to set time delay methods
+        Handler handler = new Handler();
+        handler.postDelayed(() -> {
+            // Get information from search bundle
+            Intent intent = getIntent();
+            Bundle bundle = intent.getBundleExtra("bundle");
+            String route = bundle.getString("route");
+            String tripId = bundle.getString("tripId");
+            TextView textView = findViewById(R.id.route);
+            textView.setText(route);
 
-        // Set map fragment as default in frame layout
-        Bundle newBundle = new Bundle();
-        newBundle.putStringArrayList("coordinates", allCoordinates);
+            // Set bottom navbar
+            BottomNavigationView bottomNavigationView= findViewById(R.id.bottom_navigation);
 
-        Fragment mapFragment = new MapFragment();
-        mapFragment.setArguments(newBundle);
-        getSupportFragmentManager()
-                .beginTransaction().replace(R.id.fragment_container, mapFragment)
-                .commit();
+            ArrayList<String> stopIds = getStopIds(tripId);
+            ArrayList<String> allCoordinates = allStopCoordinates(stopIds);
 
-        // Switch statements for navbar
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            Fragment selectedFragment = null;
-            switch (item.getItemId()) {
-                case R.id.map:
-                    selectedFragment = mapFragment;
-                    break;
-                case R.id.schedule:
-                    selectedFragment = new ScheduleFragment();
-                    break;
-                case R.id.info:
-                    selectedFragment = new BusInfoFragment();
-                    break;
-                default:
-            }
+            // Set map fragment as default in frame layout
+            Bundle newBundle = new Bundle();
+            newBundle.putStringArrayList("coordinates", allCoordinates);
 
-            if (selectedFragment != null) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
-            }
-            return false;
-        });
+            Fragment mapFragment = new MapFragment();
+            mapFragment.setArguments(newBundle);
+            getSupportFragmentManager()
+                    .beginTransaction().replace(R.id.fragment_container, mapFragment)
+                    .commit();
+
+            // Close loading dialog
+            loadingDialog.dismissDialog();
+
+            // Switch statements for navbar
+            bottomNavigationView.setOnItemSelectedListener(item -> {
+                Fragment selectedFragment = null;
+                switch (item.getItemId()) {
+                    case R.id.map:
+                        selectedFragment = mapFragment;
+                        break;
+                    case R.id.schedule:
+                        selectedFragment = new ScheduleFragment();
+                        break;
+                    case R.id.info:
+                        selectedFragment = new BusInfoFragment();
+                        break;
+                    default:
+                }
+
+                if (selectedFragment != null) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
+                }
+                return false;
+            });
+        }, 0);
     }
 
     public ArrayList<String> getStopIds(String intendedTripId) {
