@@ -1,6 +1,8 @@
 package com.example.androidproject;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,7 +17,9 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.DirectionsApi;
 import com.google.maps.DirectionsApiRequest;
@@ -64,9 +68,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         for(int i = 0; i < stopCoordinates.size(); i+=9) {
             if(i <= stopCoordinates.size() - 10) {
-                addToRoute(stopCoordinates.subList(i, i + 10), path);
+                addToRoute(stopCoordinates.subList(i, i + 10), path, googleMap);
             } else {
-                addToRoute(stopCoordinates.subList(i, stopCoordinates.size()), path);
+                addToRoute(stopCoordinates.subList(i, stopCoordinates.size()), path, googleMap);
             }
         }
 
@@ -78,13 +82,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(start, 13));
     }
 
-    private void addToRoute(List<String> allCoordinates, List<LatLng> path) {
+    private void addToRoute(List<String> allCoordinates, List<LatLng> path, GoogleMap googleMap) {
         GeoApiContext context = new GeoApiContext.Builder()
                 .apiKey("API")
                 .build();
 
         List<String> waypoints = allCoordinates.subList(1, allCoordinates.size());
         DirectionsApiRequest req = DirectionsApi.getDirections(context, allCoordinates.get(0), allCoordinates.get(allCoordinates.size() - 1)).waypoints(waypoints.toArray(new String[0]));
+
+        for(int i = 0; i < allCoordinates.size(); i++) {
+            String[] stopCoordinatesString = allCoordinates.get(i).split(",");
+            LatLng stopCoordinates = new LatLng(Double.parseDouble(stopCoordinatesString[0]), Double.parseDouble(stopCoordinatesString[1]));
+            BitmapDrawable bitmapDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.red_square);
+            Bitmap b = bitmapDraw.getBitmap();
+            Bitmap smallMarker = Bitmap.createScaledBitmap(b, 25, 25, false);
+            googleMap.addMarker(new MarkerOptions().position(stopCoordinates).icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
+        }
 
         try {
             DirectionsResult res = req.await();
