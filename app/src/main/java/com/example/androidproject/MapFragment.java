@@ -19,6 +19,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.DirectionsApi;
@@ -30,20 +31,25 @@ import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.DirectionsStep;
 import com.google.maps.model.EncodedPolyline;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     SupportMapFragment mapFragment;
     private GoogleMap mMap;
     private ArrayList<String> stopCoordinates;
+    private String chosenStop;
+    private String currentStop = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Bundle bundle = this.getArguments();
         stopCoordinates = bundle.getStringArrayList("coordinates");
+        chosenStop = bundle.getString("stopName");
 
         // Initialize view
         View view=inflater.inflate(R.layout.map_fragment, container, false);
@@ -62,8 +68,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
-        String[] splitStart = stopCoordinates.get(0).split(",");
-        LatLng start = new LatLng(Double.parseDouble(splitStart[0]), Double.parseDouble(splitStart[1]));
+        String[] startInfo = stopCoordinates.get(0).split(":");
+        String[] startCoordinates = startInfo[1].split(",");
+        LatLng start = new LatLng(Double.parseDouble(startCoordinates[0]), Double.parseDouble(startCoordinates[1]));
         List<LatLng> path = new ArrayList<>();
 
         for(int i = 0; i < stopCoordinates.size(); i+=9) {
@@ -78,14 +85,29 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             PolylineOptions opts = new PolylineOptions().addAll(path).color(Color.BLUE).width(5);
             mMap.addPolyline(opts);
         }
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(@NonNull Marker marker) {
+//                BitmapDrawable bitmapDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.green_square);
+//                Bitmap b = bitmapDraw.getBitmap();
+//                Bitmap smallMarker = Bitmap.createScaledBitmap(b, 25, 25, false);
+//                marker.setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+
+                currentStop = marker.getTitle();
+                return true;
+            }
+        });
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(start, 13));
     }
 
-    private void addToRoute(List<String> allCoordinates, List<LatLng> path, GoogleMap googleMap) {
+    private void addToRoute(List<String> stopsInfo, List<LatLng> path, GoogleMap googleMap) {
         GeoApiContext context = new GeoApiContext.Builder()
                 .apiKey("API")
                 .build();
+
+        ArrayList<String> allCoordinates = getStopCoordinates(stopsInfo);
+        ArrayList<String> allNames = getStopNames(stopsInfo);
 
         List<String> waypoints = allCoordinates.subList(1, allCoordinates.size());
         DirectionsApiRequest req = DirectionsApi.getDirections(context, allCoordinates.get(0), allCoordinates.get(allCoordinates.size() - 1)).waypoints(waypoints.toArray(new String[0]));
@@ -93,10 +115,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         for(int i = 0; i < allCoordinates.size(); i++) {
             String[] stopCoordinatesString = allCoordinates.get(i).split(",");
             LatLng stopCoordinates = new LatLng(Double.parseDouble(stopCoordinatesString[0]), Double.parseDouble(stopCoordinatesString[1]));
-            BitmapDrawable bitmapDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.red_square);
+
+            BitmapDrawable bitmapDraw = null;
+            if(Objects.equals(allNames.get(i), chosenStop)) {
+                bitmapDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.green_square);
+            } else {
+                bitmapDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.red_square);
+            }
+
             Bitmap b = bitmapDraw.getBitmap();
             Bitmap smallMarker = Bitmap.createScaledBitmap(b, 25, 25, false);
-            googleMap.addMarker(new MarkerOptions().position(stopCoordinates).icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
+            MarkerOptions newMarker = new MarkerOptions().position(stopCoordinates).title(allNames.get(i)).icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
+            googleMap.addMarker(newMarker);
+
+            if(Objects.equals(allNames.get(i), chosenStop)) {
+                currentStop = newMarker.getTitle();
+            }
         }
 
         try {
@@ -141,5 +175,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         } catch(Exception e) {
             Log.i("ERROR", e.getLocalizedMessage());
         }
+    }
+
+    private ArrayList<String> getStopNames(List<String> stopsInfo) {
+        ArrayList<String> allNames = new ArrayList<>();
+        for(int i = 0; i < stopsInfo.size(); i++) {
+            String stopInfo = stopsInfo.get(i);
+            String stopName = stopInfo.split(":")[0];
+            allNames.add(stopName);
+        }
+        return allNames;
+    }
+
+    private ArrayList<String> getStopCoordinates(List<String> stopsInfo) {
+        ArrayList<String> allCoordinates = new ArrayList<>();
+        for(int i = 0; i < stopsInfo.size(); i++) {
+            String stopInfo = stopsInfo.get(i);
+            String stopCoords = stopInfo.split(":")[1];
+            allCoordinates.add(stopCoords);
+        }
+        return allCoordinates;
     }
 }

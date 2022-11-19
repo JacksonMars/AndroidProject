@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
             // Set map fragment as default in frame layout
             Bundle newBundle = new Bundle();
             newBundle.putStringArrayList("coordinates", allCoordinates);
+            newBundle.putString("stopName", bundle.getString("stopName"));
 
             Fragment mapFragment = new MapFragment();
             mapFragment.setArguments(newBundle);
@@ -123,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                 String[] tokenize = line.split(",");
                 String stopId = tokenize[0];
                 if(stopId.equals(intendedStopId)) {
-                    coordinates = tokenize[4] + "," + tokenize[5];
+                    coordinates = tokenize[2] + ":" + tokenize[4] + "," + tokenize[5];
                 }
                 line = bufferedReader.readLine();
             }
