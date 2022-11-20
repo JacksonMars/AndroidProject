@@ -56,7 +56,6 @@ public class SearchRouteActivity extends AppCompatActivity {
                 String selectedRoute = listView.getItemAtPosition(position).toString(); // Route num + name
                 String[] selectedRouteComponents = selectedRoute.split(": ");
                 String routeNum = selectedRouteComponents[0];
-                String routeName = selectedRouteComponents[1];
                 String routeId = routes.get(selectedRoute); // Route id
                 TreeSet<String> tripIds = getTripIds(routeId); // Trip ids for this route
                 HashMap<String, String> stopIdTripIdMap = mapStopIdsToTripIds(tripIds); // Map stop ids for route's trips
@@ -137,12 +136,9 @@ public class SearchRouteActivity extends AppCompatActivity {
                 String busNum = tokenize[2];
                 String routeName = tokenize[3];
 
-                //Some bus routes have no bus number
+                //Trains have no bus number, do not add these to routes
                 String routeString;
-                if (busNum.isEmpty()) {
-                    routeString = String.format("%s", routeName);
-                    // Do not add trains to routes
-                } else {
+                if (!busNum.isEmpty()) {
                     routeString = String.format("%s: %s", busNum, routeName);
                     routes.put(routeString, routeId);
                 }

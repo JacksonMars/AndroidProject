@@ -61,7 +61,6 @@ public class SearchStopActivity extends AppCompatActivity {
                 String selectedStop = listView.getItemAtPosition(position).toString(); // Stop num + name
                 String[] selectedStopComponents = selectedStop.split(": ");
                 String selectedStopNum = selectedStopComponents[0]; // Stop num
-                String selectedStopName = selectedStopComponents[1]; // Stop name
                 String stopId = stops.get(selectedStop); // Stop id
                 String tripId = stopIdTripIdMap.get(stopId); // Trip id
 
@@ -74,20 +73,15 @@ public class SearchStopActivity extends AppCompatActivity {
 
                     @Override
                     public void onResponse(ArrayList<HashMap<String, String>> activeBusses) {
-                        Toast.makeText(SearchStopActivity.this, activeBusses.toString(), Toast.LENGTH_LONG).show();
-                        bundle.putSerializable("activeBusses", activeBusses);
                         // Create an intent to pass data
                         Intent newIntent = new Intent(view.getContext(), MainActivity.class);
-
                         // Put new info in bundle
+                        bundle.putSerializable("activeBusses", activeBusses);
                         bundle.putString("tripId", tripId);
-
-                        // Create a bundle to store data
+                        // Add bundle to new intent
                         newIntent.putExtra("bundle", bundle);
-
                         // Close loading dialog
                         loadingDialog.dismissDialog();
-
                         // Go to Map
                         startActivity(newIntent);
                     }
