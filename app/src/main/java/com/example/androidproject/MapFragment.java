@@ -118,15 +118,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             String[] stopCoordinatesString = allCoordinates.get(i).split(",");
             LatLng stopCoordinates = new LatLng(Double.parseDouble(stopCoordinatesString[0]), Double.parseDouble(stopCoordinatesString[1]));
 
-            BitmapDrawable bitmapDraw = null;
-            if(Objects.equals(allNames.get(i), currentStop)) {
-                bitmapDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.green_square);
-            } else {
-                bitmapDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.red_square);
-            }
+            BitmapDrawable bitmapDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.translink_logo);
 
             Bitmap b = bitmapDraw.getBitmap();
-            Bitmap smallMarker = Bitmap.createScaledBitmap(b, 25, 25, false);
+            Bitmap smallMarker = Bitmap.createScaledBitmap(b, 40, 40, false);
             MarkerOptions newMarker = new MarkerOptions().position(stopCoordinates).title(allNames.get(i)).icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
             googleMap.addMarker(newMarker);
 
