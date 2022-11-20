@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -63,9 +64,11 @@ public class SearchStopActivity extends AppCompatActivity {
                 String selectedStopNum = selectedStopComponents[0]; // Stop num
                 String stopId = stops.get(selectedStop); // Stop id
                 String tripId = stopIdTripIdMap.get(stopId); // Trip id
-
+                String stopName = stopStrings.get(position);
                 RealTimeBusInfoService realTimeBusInfoService = new RealTimeBusInfoService(SearchStopActivity.this);
                 realTimeBusInfoService.getActiveBusses(selectedStopNum, routeNum, new RealTimeBusInfoService.VolleyResponseListener() {
+
+                    //Async necessary to get active bus locations from API
                     @Override
                     public void onError(String message) {
                         Toast.makeText(SearchStopActivity.this, "Error", Toast.LENGTH_LONG).show();
@@ -73,15 +76,21 @@ public class SearchStopActivity extends AppCompatActivity {
 
                     @Override
                     public void onResponse(ArrayList<HashMap<String, String>> activeBusses) {
+
                         // Create an intent to pass data
                         Intent newIntent = new Intent(view.getContext(), MainActivity.class);
+
                         // Put new info in bundle
                         bundle.putSerializable("activeBusses", activeBusses);
                         bundle.putString("tripId", tripId);
+                        bundle.putString("stopName", stopName);
+
                         // Add bundle to new intent
                         newIntent.putExtra("bundle", bundle);
+
                         // Close loading dialog
                         loadingDialog.dismissDialog();
+
                         // Go to Map
                         startActivity(newIntent);
                     }

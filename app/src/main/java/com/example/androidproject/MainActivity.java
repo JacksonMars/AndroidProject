@@ -47,6 +47,9 @@ public class MainActivity extends AppCompatActivity {
 
             // Set map fragment as default in frame layout
             bundle.putStringArrayList("coordinates", allCoordinates);
+            Bundle newBundle = new Bundle();
+            newBundle.putStringArrayList("coordinates", allCoordinates);
+            newBundle.putString("stopName", bundle.getString("stopName"));
 
             Fragment mapFragment = new MapFragment();
             mapFragment.setArguments(bundle);
@@ -66,6 +69,11 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.schedule:
                         selectedFragment = new ScheduleFragment();
+                        Bundle scheduleBundle = new Bundle();
+
+                        String chosenStop = ((MapFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container)).getCurrentStopNumber();
+                        scheduleBundle.putString("stopNumber", chosenStop);
+                        selectedFragment.setArguments(scheduleBundle);
                         break;
                     case R.id.info:
                         selectedFragment = new BusInfoFragment();
@@ -121,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
                 String[] tokenize = line.split(",");
                 String stopId = tokenize[0];
                 if(stopId.equals(intendedStopId)) {
-                    coordinates = tokenize[4] + "," + tokenize[5];
+                    coordinates = tokenize[1] + ": " + tokenize[2] + "/" + tokenize[4] + "," + tokenize[5];
                 }
                 line = bufferedReader.readLine();
             }
