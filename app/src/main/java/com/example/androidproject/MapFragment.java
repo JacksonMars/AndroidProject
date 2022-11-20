@@ -41,7 +41,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     SupportMapFragment mapFragment;
     private GoogleMap mMap;
     private ArrayList<String> stopCoordinates;
-    private String chosenStop;
     private String currentStop = null;
 
     @Override
@@ -49,7 +48,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                              Bundle savedInstanceState) {
         Bundle bundle = this.getArguments();
         stopCoordinates = bundle.getStringArrayList("coordinates");
-        chosenStop = bundle.getString("stopName");
+
+        if(currentStop == null) {
+            currentStop = bundle.getString("stopName");
+        }
 
         // Initialize view
         View view=inflater.inflate(R.layout.map_fragment, container, false);
@@ -68,7 +70,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
-        String[] startInfo = stopCoordinates.get(0).split(":");
+        String[] startInfo = stopCoordinates.get(0).split("/");
         String[] startCoordinates = startInfo[1].split(",");
         LatLng start = new LatLng(Double.parseDouble(startCoordinates[0]), Double.parseDouble(startCoordinates[1]));
         List<LatLng> path = new ArrayList<>();
@@ -94,7 +96,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 //                marker.setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
 
                 currentStop = marker.getTitle();
-                return true;
+                return false;
             }
         });
 
@@ -117,7 +119,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             LatLng stopCoordinates = new LatLng(Double.parseDouble(stopCoordinatesString[0]), Double.parseDouble(stopCoordinatesString[1]));
 
             BitmapDrawable bitmapDraw = null;
-            if(Objects.equals(allNames.get(i), chosenStop)) {
+            if(Objects.equals(allNames.get(i), currentStop)) {
                 bitmapDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.green_square);
             } else {
                 bitmapDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.red_square);
@@ -128,7 +130,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             MarkerOptions newMarker = new MarkerOptions().position(stopCoordinates).title(allNames.get(i)).icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
             googleMap.addMarker(newMarker);
 
-            if(Objects.equals(allNames.get(i), chosenStop)) {
+            if(Objects.equals(allNames.get(i), currentStop)) {
                 currentStop = newMarker.getTitle();
             }
         }
@@ -181,7 +183,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         ArrayList<String> allNames = new ArrayList<>();
         for(int i = 0; i < stopsInfo.size(); i++) {
             String stopInfo = stopsInfo.get(i);
-            String stopName = stopInfo.split(":")[0];
+            String stopName = stopInfo.split("/")[0];
             allNames.add(stopName);
         }
         return allNames;
@@ -191,9 +193,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         ArrayList<String> allCoordinates = new ArrayList<>();
         for(int i = 0; i < stopsInfo.size(); i++) {
             String stopInfo = stopsInfo.get(i);
-            String stopCoords = stopInfo.split(":")[1];
+            String stopCoords = stopInfo.split("/")[1];
             allCoordinates.add(stopCoords);
         }
         return allCoordinates;
+    }
+
+    public String getCurrentStopNumber() {
+        return currentStop.split("/")[0].split(":")[0];
     }
 }

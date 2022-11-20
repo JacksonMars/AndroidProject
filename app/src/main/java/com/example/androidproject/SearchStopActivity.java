@@ -60,7 +60,7 @@ public class SearchStopActivity extends AppCompatActivity {
                 String selectedStop = listView.getItemAtPosition(position).toString();
                 String stopId = stops.get(selectedStop); // Stop id
                 String tripId = stopIdTripIdMap.get(stopId); // Trip id
-                String stopName = stopStrings.get(position).split(": ")[1];
+                String stopName = stopStrings.get(position);
 
                 // Create an intent to pass data
                 Intent newIntent = new Intent(view.getContext(), MainActivity.class);

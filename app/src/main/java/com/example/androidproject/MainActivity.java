@@ -69,6 +69,11 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.schedule:
                         selectedFragment = new ScheduleFragment();
+                        Bundle scheduleBundle = new Bundle();
+
+                        String chosenStop = ((MapFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container)).getCurrentStopNumber();
+                        scheduleBundle.putString("stopNumber", chosenStop);
+                        selectedFragment.setArguments(scheduleBundle);
                         break;
                     case R.id.info:
                         selectedFragment = new BusInfoFragment();
@@ -124,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
                 String[] tokenize = line.split(",");
                 String stopId = tokenize[0];
                 if(stopId.equals(intendedStopId)) {
-                    coordinates = tokenize[2] + ":" + tokenize[4] + "," + tokenize[5];
+                    coordinates = tokenize[0] + ": " + tokenize[2] + "/" + tokenize[4] + "," + tokenize[5];
                 }
                 line = bufferedReader.readLine();
             }
