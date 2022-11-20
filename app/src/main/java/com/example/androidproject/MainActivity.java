@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
                 String[] tokenize = line.split(",");
                 String stopId = tokenize[0];
                 if(stopId.equals(intendedStopId)) {
-                    coordinates = tokenize[0] + ": " + tokenize[2] + "/" + tokenize[4] + "," + tokenize[5];
+                    coordinates = tokenize[1] + ": " + tokenize[2] + "/" + tokenize[4] + "," + tokenize[5];
                 }
                 line = bufferedReader.readLine();
             }
