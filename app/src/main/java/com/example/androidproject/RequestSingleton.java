@@ -6,6 +6,10 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
+/**
+ * Singleton object for Request Queue.
+ */
+
 public class RequestSingleton {
     private static RequestSingleton instance;
     private RequestQueue requestQueue;

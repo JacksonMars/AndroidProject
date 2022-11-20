@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Service for getting active busses from TransLink API.
+ */
 public class RealTimeBusInfoService {
     public static final String API_KEY = "AdKqzDnSKgbtZdyDroOt";
 
@@ -25,22 +28,33 @@ public class RealTimeBusInfoService {
         this.context = context;
     }
 
+    /**
+     * Used for asynchronous API requesting.
+     */
     public interface VolleyResponseListener {
         void onError(String message);
 
         void onResponse(ArrayList<HashMap<String, String>> activeBusses);
     }
 
+    /**
+     * Creates an ArrayList containing details for each relevant active bus.
+     * @param stopNum a String
+     * @param routeNum a String
+     * @param volleyResponseListener a VolleyResponseListener
+     */
     public void getActiveBusses(String stopNum, String routeNum, VolleyResponseListener volleyResponseListener) {
-        // Instantiate the RequestQueue.
+        // Need to specify stop and route numbers to get relevant active busses.
         String url = MessageFormat.format(
                 "https://api.translink.ca/rttiapi/v1/buses?apikey={0}&stopNo={1}&routeNo={2}",
                         API_KEY,
                         stopNum,
                         routeNum);
 
+        // Begin GET request
         JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null,
             response -> {
+                // Add relevant active bus details to ArrayList
                 activeBussesList = new ArrayList<>();
                 for (int i = 0; i < response.length(); i++) {
                     HashMap<String, String> activeBusMap = new HashMap<>();
