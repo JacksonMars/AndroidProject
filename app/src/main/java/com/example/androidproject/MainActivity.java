@@ -3,7 +3,6 @@ package com.example.androidproject;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -47,11 +46,10 @@ public class MainActivity extends AppCompatActivity {
             ArrayList<String> allCoordinates = allStopCoordinates(stopIds);
 
             // Set map fragment as default in frame layout
-            Bundle newBundle = new Bundle();
-            newBundle.putStringArrayList("coordinates", allCoordinates);
+            bundle.putStringArrayList("coordinates", allCoordinates);
 
             Fragment mapFragment = new MapFragment();
-            mapFragment.setArguments(newBundle);
+            mapFragment.setArguments(bundle);
             getSupportFragmentManager()
                     .beginTransaction().replace(R.id.fragment_container, mapFragment)
                     .commit();

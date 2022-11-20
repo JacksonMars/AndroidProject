@@ -53,7 +53,10 @@ public class SearchRouteActivity extends AppCompatActivity {
             Handler handler = new Handler();
             handler.postDelayed(() -> {
                 // Get values for selected list item
-                String selectedRoute = listView.getItemAtPosition(position).toString();
+                String selectedRoute = listView.getItemAtPosition(position).toString(); // Route num + name
+                String[] selectedRouteComponents = selectedRoute.split(": ");
+                String routeNum = selectedRouteComponents[0];
+                String routeName = selectedRouteComponents[1];
                 String routeId = routes.get(selectedRoute); // Route id
                 TreeSet<String> tripIds = getTripIds(routeId); // Trip ids for this route
                 HashMap<String, String> stopIdTripIdMap = mapStopIdsToTripIds(tripIds); // Map stop ids for route's trips
@@ -65,6 +68,7 @@ public class SearchRouteActivity extends AppCompatActivity {
                 // Create a bundle to store data
                 Bundle bundle = new Bundle();
                 bundle.putString("route", selectedRoute);
+                bundle.putString("routeNum", routeNum);
                 bundle.putSerializable("stopIdTripIdMap", stopIdTripIdMap);
                 bundle.putSerializable("stops", stops);
                 intent.putExtra("bundle", bundle);
@@ -137,10 +141,11 @@ public class SearchRouteActivity extends AppCompatActivity {
                 String routeString;
                 if (busNum.isEmpty()) {
                     routeString = String.format("%s", routeName);
+                    // Do not add trains to routes
                 } else {
                     routeString = String.format("%s: %s", busNum, routeName);
+                    routes.put(routeString, routeId);
                 }
-                routes.put(routeString, routeId);
 
                 line = bufferedReader.readLine();
             }

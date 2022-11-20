@@ -10,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -35,6 +36,7 @@ public class SearchStopActivity extends AppCompatActivity {
 
         // Option 2: Extract data from bundle
         Bundle bundle = intent.getBundleExtra("bundle");
+        String routeNum = bundle.getString("routeNum");
         HashMap<String, String> stopIdTripIdMap = (HashMap<String, String>) bundle.getSerializable("stopIdTripIdMap");
         HashMap<String, String> stops = (HashMap<String, String>) bundle.getSerializable("stops");
 
@@ -56,24 +58,40 @@ public class SearchStopActivity extends AppCompatActivity {
             Handler handler = new Handler();
             handler.postDelayed(() -> {
                 // Get values for selected list item
-                String selectedStop = listView.getItemAtPosition(position).toString();
+                String selectedStop = listView.getItemAtPosition(position).toString(); // Stop num + name
+                String[] selectedStopComponents = selectedStop.split(": ");
+                String selectedStopNum = selectedStopComponents[0]; // Stop num
+                String selectedStopName = selectedStopComponents[1]; // Stop name
                 String stopId = stops.get(selectedStop); // Stop id
                 String tripId = stopIdTripIdMap.get(stopId); // Trip id
 
-                // Create an intent to pass data
-                Intent newIntent = new Intent(view.getContext(), MainActivity.class);
+                RealTimeBusInfoService realTimeBusInfoService = new RealTimeBusInfoService(SearchStopActivity.this);
+                realTimeBusInfoService.getActiveBusses(selectedStopNum, routeNum, new RealTimeBusInfoService.VolleyResponseListener() {
+                    @Override
+                    public void onError(String message) {
+                        Toast.makeText(SearchStopActivity.this, "Error", Toast.LENGTH_LONG).show();
+                    }
 
-                // Put new info in bundle
-                bundle.putString("tripId", tripId);
+                    @Override
+                    public void onResponse(ArrayList<HashMap<String, String>> activeBusses) {
+                        Toast.makeText(SearchStopActivity.this, activeBusses.toString(), Toast.LENGTH_LONG).show();
+                        bundle.putSerializable("activeBusses", activeBusses);
+                        // Create an intent to pass data
+                        Intent newIntent = new Intent(view.getContext(), MainActivity.class);
 
-                // Create a bundle to store data
-                newIntent.putExtra("bundle", bundle);
+                        // Put new info in bundle
+                        bundle.putString("tripId", tripId);
 
-                // Close loading dialog
-                loadingDialog.dismissDialog();
+                        // Create a bundle to store data
+                        newIntent.putExtra("bundle", bundle);
 
-                // Go to Map
-                startActivity(newIntent);
+                        // Close loading dialog
+                        loadingDialog.dismissDialog();
+
+                        // Go to Map
+                        startActivity(newIntent);
+                    }
+                });
             }, 0);
         });
     }
