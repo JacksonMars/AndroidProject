@@ -227,4 +227,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public String getCurrentStopNumber() {
         return currentStop.split("/")[0].split(":")[0];
     }
+
+    public String getCurrentStopName() {
+        return currentStop.split("/")[0].split(":")[1];
+    }
 }

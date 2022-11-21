@@ -71,8 +71,10 @@ public class MainActivity extends AppCompatActivity {
                         selectedFragment = new ScheduleFragment();
                         Bundle scheduleBundle = new Bundle();
 
-                        String chosenStop = ((MapFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container)).getCurrentStopNumber();
-                        scheduleBundle.putString("stopNumber", chosenStop);
+                        String chosenStopNumber = ((MapFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container)).getCurrentStopNumber();
+                        String chosenStopName = ((MapFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container)).getCurrentStopName();
+                        scheduleBundle.putString("stopNumber", chosenStopNumber);
+                        scheduleBundle.putString("stopName", chosenStopName);
                         selectedFragment.setArguments(scheduleBundle);
                         break;
                     case R.id.info:
