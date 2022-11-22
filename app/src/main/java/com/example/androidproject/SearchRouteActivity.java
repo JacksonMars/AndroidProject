@@ -155,20 +155,6 @@ public class SearchRouteActivity extends AppCompatActivity {
     }
 
     /**
-     * Return true if strNum is numerical, else false.
-     * @param str a String
-     * @return true if strNum is numerical, else false
-     */
-    public static boolean isNumeric(String str) {
-        try {
-            double parseDouble = Double.parseDouble(str);
-        } catch (NumberFormatException e) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
      * Reformat destination strings to follow 'To destination' format
      * @param destination a String
      * @return formatted destination String
@@ -176,15 +162,28 @@ public class SearchRouteActivity extends AppCompatActivity {
     public static String formatDestination(String destination, String routeNum) {
         String[] destinationSplit = destination.split(" ");
         List<String> destinationArrayList = new ArrayList<>(Arrays.asList(destinationSplit));
-        if (isNumeric(destinationSplit[0])) {
+
+        // Remove initial route number from string
+        if (routeNum.contains(destinationSplit[0])) {
             destinationArrayList.remove(0);
         }
+
+        // Remove any lone 'to's
         destinationArrayList.remove("To");
         destinationArrayList.remove("to");
-        destinationArrayList.remove(routeNum);
-        destinationArrayList.add(0, "To");
-        destinationSplit = destinationArrayList.toArray(new String[0]);
 
+        // Special case for WCE
+        if (Objects.equals(routeNum, "WCE")) {
+            destinationArrayList.remove("West");
+            destinationArrayList.remove("Coast");
+            destinationArrayList.remove("Express");
+            destinationArrayList.remove("Train");
+        }
+
+        // Add initial To
+        destinationArrayList.add(0, "To");
+
+        destinationSplit = destinationArrayList.toArray(new String[0]);
         return String.join(" ", destinationSplit);
     }
 
