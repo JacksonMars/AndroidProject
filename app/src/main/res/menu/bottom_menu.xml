@@ -8,9 +8,4 @@
         android:id="@+id/schedule"
         android:title="@string/schedule"
         android:icon="@drawable/ic_schedule" />
-
-    <item
-        android:id="@+id/info"
-        android:title="@string/info"
-        android:icon="@drawable/ic_info" />
 </menu>

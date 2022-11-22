@@ -75,9 +75,6 @@ public class MainActivity extends AppCompatActivity {
                         scheduleBundle.putString("stopNumber", chosenStop);
                         selectedFragment.setArguments(scheduleBundle);
                         break;
-                    case R.id.info:
-                        selectedFragment = new BusInfoFragment();
-                        break;
                     default:
                 }
 
