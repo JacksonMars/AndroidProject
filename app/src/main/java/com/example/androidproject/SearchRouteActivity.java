@@ -156,16 +156,13 @@ public class SearchRouteActivity extends AppCompatActivity {
 
     /**
      * Return true if strNum is numerical, else false.
-     * @param strNum a String
+     * @param str a String
      * @return true if strNum is numerical, else false
      */
-    public static boolean isNumeric(String strNum) {
-        if (strNum == null) {
-            return false;
-        }
+    public static boolean isNumeric(String str) {
         try {
-            double d = Double.parseDouble(strNum);
-        } catch (NumberFormatException nfe) {
+            double parseDouble = Double.parseDouble(str);
+        } catch (NumberFormatException e) {
             return false;
         }
         return true;
