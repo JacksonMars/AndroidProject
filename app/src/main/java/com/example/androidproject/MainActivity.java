@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
             textView.setText(route);
 
             // Set bottom navbar
-            BottomNavigationView bottomNavigationView= findViewById(R.id.bottom_navigation);
+            BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 
             ArrayList<String> stopIds = getStopIds(tripId);
             ArrayList<String> allCoordinates = allStopCoordinates(stopIds);

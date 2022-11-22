@@ -71,7 +71,25 @@ public class SearchStopActivity extends AppCompatActivity {
                     //Async necessary to get active bus locations from API
                     @Override
                     public void onError(String message) {
-                        Toast.makeText(SearchStopActivity.this, "Error", Toast.LENGTH_LONG).show();
+                        Toast.makeText(SearchStopActivity.this,
+                                "No actives busses for this stop",
+                                Toast.LENGTH_LONG).show();
+
+                        // Create an intent to pass data
+                        Intent newIntent = new Intent(view.getContext(), MainActivity.class);
+
+                        // Put new info in bundle
+                        bundle.putString("tripId", tripId);
+                        bundle.putString("stopName", stopName);
+
+                        // Add bundle to new intent
+                        newIntent.putExtra("bundle", bundle);
+
+                        // Close loading dialog
+                        loadingDialog.dismissDialog();
+
+                        // Go to Map
+                        startActivity(newIntent);
                     }
 
                     @Override

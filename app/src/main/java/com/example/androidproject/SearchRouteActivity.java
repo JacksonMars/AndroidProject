@@ -57,19 +57,16 @@ public class SearchRouteActivity extends AppCompatActivity {
                 String[] selectedRouteComponents = selectedRoute.split(": ");
                 String routeNum = selectedRouteComponents[0];
                 String routeId = routes.get(selectedRoute); // Route id
-                TreeSet<String> tripIds = getTripIds(routeId); // Trip ids for this route
-                HashMap<String, String> stopIdTripIdMap = mapStopIdsToTripIds(tripIds); // Map stop ids for route's trips
-                HashMap<String, String> stops = mapStopStringsToStopIds(stopIdTripIdMap.keySet()); // Map stop strings to ids
+                HashMap<String, TreeSet<String>> destinationsToTripIds = mapRouteDestinationsToTripIds(routeId); // Trip ids for this route
 
                 // Create an intent to pass data
-                Intent intent = new Intent(view.getContext(), SearchStopActivity.class);
+                Intent intent = new Intent(view.getContext(), SearchDestinationActivity.class);
 
                 // Create a bundle to store data
                 Bundle bundle = new Bundle();
                 bundle.putString("route", selectedRoute);
                 bundle.putString("routeNum", routeNum);
-                bundle.putSerializable("stopIdTripIdMap", stopIdTripIdMap);
-                bundle.putSerializable("stops", stops);
+                bundle.putSerializable("destinationsToTripIds", destinationsToTripIds);
                 intent.putExtra("bundle", bundle);
 
                 // Close loading dialog
@@ -155,13 +152,9 @@ public class SearchRouteActivity extends AppCompatActivity {
         return routes;
     }
 
-    /**
-     * Returns a TreeSet of trip ids for a given route.
-     * @param routeId a String
-     * @return TreeSet of trip ids
-     */
-    public TreeSet<String> getTripIds(String routeId) {
-        TreeSet<String> tripIds = new TreeSet<>();
+    public HashMap<String, TreeSet<String>> mapRouteDestinationsToTripIds(String selectedRouteId) {
+        HashMap<String, TreeSet<String>> destinations = new HashMap<>();
+
         try {
             //Read the file
             InputStream inputStream = getBaseContext().getResources().openRawResource(R.raw.trips);
@@ -175,9 +168,14 @@ public class SearchRouteActivity extends AppCompatActivity {
                 String[] tokenize = line.split(",");
                 String fileRouteId = tokenize[0];
                 String tripId = tokenize[2];
+                String destination = tokenize[3];
 
-                if (Objects.equals(routeId, fileRouteId)) {
-                    tripIds.add(tripId);
+                if (!destinations.containsKey(destination)) {
+                    destinations.put(destination, new TreeSet<>());
+                }
+
+                if (Objects.equals(selectedRouteId, fileRouteId)) {
+                    Objects.requireNonNull(destinations.get(destination)).add(tripId);
                 }
 
                 line = bufferedReader.readLine();
@@ -188,81 +186,7 @@ public class SearchRouteActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return tripIds;
-    }
 
-    /**
-     * Map stop ids to their trip ids.
-     * @param tripIds a TreeSet
-     * @return a Hashmap of stop ids mapped to trip ids
-     */
-    public HashMap<String, String> mapStopIdsToTripIds(TreeSet<String> tripIds) {
-        HashMap<String, String> stopTripMap = new HashMap<>();
-        try {
-            //Read the file
-            InputStream inputStream = getBaseContext().getResources().openRawResource(R.raw.stop_times);
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            bufferedReader.readLine();
-            String line = bufferedReader.readLine();
-
-            while (line != null) {
-                //Use string.split to load a string array with the values from the line of
-                //the file, using a comma as the delimiter
-                String[] tokenize = line.split(",");
-                String tripId = tokenize[0];
-                String stopId = tokenize[3];
-
-                if (tripIds.contains(tripId)) {
-                    stopTripMap.put(stopId, tripId);
-                }
-
-                line = bufferedReader.readLine();
-            }
-            //Close reader, catch errors
-            bufferedReader.close();
-            inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return stopTripMap;
-    }
-
-    /**
-     * Return a TreeSet of stop names from a set of stop ids.
-     * @param stopIds a TreeSet
-     * @return a TreeSet of stop names
-     */
-    public HashMap<String, String> mapStopStringsToStopIds(Set<String> stopIds) {
-        HashMap<String, String> stopStringStopIdMap = new HashMap<>();
-
-        try {
-            //Read the file
-            InputStream inputStream = getBaseContext().getResources().openRawResource(R.raw.stops);
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            bufferedReader.readLine();
-            String line = bufferedReader.readLine();
-
-            while (line != null) {
-                //Use string.split to load a string array with the values from the line of
-                //the file, using a comma as the delimiter
-                String[] tokenize = line.split(",");
-                String stopId = tokenize[0];
-                String stopCode = tokenize[1];
-                String stopName = tokenize[2];
-
-                if (stopIds.contains(stopId)) {
-                    String stopString = String.format("%s: %s", stopCode, stopName);
-                    stopStringStopIdMap.put(stopString, stopId);
-                }
-                line = bufferedReader.readLine();
-            }
-            //Close reader, catch errors
-            bufferedReader.close();
-            inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return stopStringStopIdMap;
+        return destinations;
     }
 }
