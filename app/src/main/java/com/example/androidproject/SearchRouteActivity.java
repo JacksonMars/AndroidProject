@@ -154,6 +154,11 @@ public class SearchRouteActivity extends AppCompatActivity {
         return routes;
     }
 
+    /**
+     * Return true if strNum is numerical, else false.
+     * @param strNum a String
+     * @return true if strNum is numerical, else false
+     */
     public static boolean isNumeric(String strNum) {
         if (strNum == null) {
             return false;
@@ -166,9 +171,14 @@ public class SearchRouteActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Reformat destination strings to follow 'To destination' format
+     * @param destination a String
+     * @return formatted destination String
+     */
     public static String formatDestination(String destination) {
         String[] destinationSplit = destination.split(" ");
-        List<String> list = new ArrayList<String>(Arrays.asList(destinationSplit));
+        List<String> list = new ArrayList<>(Arrays.asList(destinationSplit));
         list.remove("To");
         list.remove("to");
         destinationSplit = list.toArray(new String[0]);
