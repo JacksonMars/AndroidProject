@@ -19,9 +19,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -153,6 +154,31 @@ public class SearchRouteActivity extends AppCompatActivity {
         return routes;
     }
 
+    public static boolean isNumeric(String strNum) {
+        if (strNum == null) {
+            return false;
+        }
+        try {
+            double d = Double.parseDouble(strNum);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
+    }
+
+    public static String formatDestination(String destination) {
+        String[] destinationSplit = destination.split(" ");
+        List<String> list = new ArrayList<String>(Arrays.asList(destinationSplit));
+        list.remove("To");
+        list.remove("to");
+        destinationSplit = list.toArray(new String[0]);
+        if (isNumeric(destinationSplit[0])) {
+            destinationSplit[0] = "To";
+        }
+
+        return String.join(" ", destinationSplit);
+    }
+
     public HashMap<String, TreeSet<String>> mapRouteDestinationsToTripIds(String selectedRouteId) {
         HashMap<String, TreeSet<String>> destinations = new HashMap<>();
 
@@ -172,6 +198,7 @@ public class SearchRouteActivity extends AppCompatActivity {
                 String destination = tokenize[3];
 
                 if (Objects.equals(selectedRouteId, fileRouteId)) {
+                    destination = formatDestination(destination);
                     if (!destinations.containsKey(destination)) {
                         destinations.put(destination, new TreeSet<>());
                     }
@@ -186,20 +213,6 @@ public class SearchRouteActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        // Need to remove duplicate destinations
-//        Set<String> keys = destinations.keySet();
-//        Set<String> keysToRemove = new HashSet<>();
-//        for (String key : keys) {
-//            String[] keyWords = key.split(" ");
-//            if (keyWords.length > 2) {
-//                keysToRemove.add(key);
-//            }
-//        }
-//
-//        for (String keyToRemove: keysToRemove) {
-//            destinations.remove(keyToRemove);
-//        }
 
         return destinations;
     }
