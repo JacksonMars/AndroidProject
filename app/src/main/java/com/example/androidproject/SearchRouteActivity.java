@@ -59,7 +59,7 @@ public class SearchRouteActivity extends AppCompatActivity {
                 String[] selectedRouteComponents = selectedRoute.split(": ");
                 String routeNum = selectedRouteComponents[0];
                 String routeId = routes.get(selectedRoute); // Route id
-                HashMap<String, TreeSet<String>> destinationsToTripIds = mapRouteDestinationsToTripIds(routeId); // Trip ids for this route
+                HashMap<String, TreeSet<String>> destinationsToTripIds = mapRouteDestinationsToTripIds(routeId, routeNum); // Trip ids for this route
 
                 // Create an intent to pass data
                 Intent intent = new Intent(view.getContext(), SearchDestinationActivity.class);
@@ -173,20 +173,22 @@ public class SearchRouteActivity extends AppCompatActivity {
      * @param destination a String
      * @return formatted destination String
      */
-    public static String formatDestination(String destination) {
+    public static String formatDestination(String destination, String routeNum) {
         String[] destinationSplit = destination.split(" ");
-        List<String> list = new ArrayList<>(Arrays.asList(destinationSplit));
-        list.remove("To");
-        list.remove("to");
-        destinationSplit = list.toArray(new String[0]);
+        List<String> destinationArrayList = new ArrayList<>(Arrays.asList(destinationSplit));
         if (isNumeric(destinationSplit[0])) {
-            destinationSplit[0] = "To";
+            destinationArrayList.remove(0);
         }
+        destinationArrayList.remove("To");
+        destinationArrayList.remove("to");
+        destinationArrayList.remove(routeNum);
+        destinationArrayList.add(0, "To");
+        destinationSplit = destinationArrayList.toArray(new String[0]);
 
         return String.join(" ", destinationSplit);
     }
 
-    public HashMap<String, TreeSet<String>> mapRouteDestinationsToTripIds(String selectedRouteId) {
+    public HashMap<String, TreeSet<String>> mapRouteDestinationsToTripIds(String selectedRouteId, String routeNum) {
         HashMap<String, TreeSet<String>> destinations = new HashMap<>();
 
         try {
@@ -205,7 +207,7 @@ public class SearchRouteActivity extends AppCompatActivity {
                 String destination = tokenize[3];
 
                 if (Objects.equals(selectedRouteId, fileRouteId)) {
-                    destination = formatDestination(destination);
+                    destination = formatDestination(destination, routeNum);
                     if (!destinations.containsKey(destination)) {
                         destinations.put(destination, new TreeSet<>());
                     }
