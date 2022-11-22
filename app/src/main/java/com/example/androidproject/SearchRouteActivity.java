@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -170,11 +171,10 @@ public class SearchRouteActivity extends AppCompatActivity {
                 String tripId = tokenize[2];
                 String destination = tokenize[3];
 
-                if (!destinations.containsKey(destination)) {
-                    destinations.put(destination, new TreeSet<>());
-                }
-
                 if (Objects.equals(selectedRouteId, fileRouteId)) {
+                    if (!destinations.containsKey(destination)) {
+                        destinations.put(destination, new TreeSet<>());
+                    }
                     Objects.requireNonNull(destinations.get(destination)).add(tripId);
                 }
 
@@ -186,6 +186,20 @@ public class SearchRouteActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        // Need to remove duplicate destinations
+//        Set<String> keys = destinations.keySet();
+//        Set<String> keysToRemove = new HashSet<>();
+//        for (String key : keys) {
+//            String[] keyWords = key.split(" ");
+//            if (keyWords.length > 2) {
+//                keysToRemove.add(key);
+//            }
+//        }
+//
+//        for (String keyToRemove: keysToRemove) {
+//            destinations.remove(keyToRemove);
+//        }
 
         return destinations;
     }
