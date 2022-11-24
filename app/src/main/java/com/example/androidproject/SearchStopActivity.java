@@ -18,6 +18,7 @@ import androidx.appcompat.widget.SearchView;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Set;
 
 public class SearchStopActivity extends AppCompatActivity {
@@ -37,8 +38,11 @@ public class SearchStopActivity extends AppCompatActivity {
         // Option 2: Extract data from bundle
         Bundle bundle = intent.getBundleExtra("bundle");
         String routeNum = bundle.getString("routeNum");
+        String selectedDestination = bundle.getString("selectedDestination");
         HashMap<String, String> stopIdTripIdMap = (HashMap<String, String>) bundle.getSerializable("stopIdTripIdMap");
         HashMap<String, String> stops = (HashMap<String, String>) bundle.getSerializable("stops");
+
+        Objects.requireNonNull(getSupportActionBar()).setTitle(routeNum + ": " + selectedDestination);
 
         // Put stop strings in ArrayList, sort
         Set<String> stopsKeySet = stops.keySet();

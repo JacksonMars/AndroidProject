@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -34,8 +35,11 @@ public class SearchDestinationActivity extends AppCompatActivity {
 
         // Option 2: Extract data from bundle
         Bundle bundle = intent.getBundleExtra("bundle");
+        String selectedRoute = bundle.getString("route");
         HashMap<String, TreeSet<String>> destinationsToTripIds =
                 (HashMap<String, TreeSet<String>>) bundle.getSerializable("destinationsToTripIds");
+
+        Objects.requireNonNull(getSupportActionBar()).setTitle(selectedRoute);
 
         // Put stop strings in ArrayList, sort
         Set<String> destinations = destinationsToTripIds.keySet();
@@ -64,6 +68,7 @@ public class SearchDestinationActivity extends AppCompatActivity {
                 Intent newIntent = new Intent(view.getContext(), SearchStopActivity.class);
 
                 // Create a bundle to store data
+                bundle.putString("selectedDestination", selectedDestination);
                 bundle.putSerializable("stopIdTripIdMap", stopIdTripIdMap);
                 bundle.putSerializable("stops", stops);
                 newIntent.putExtra("bundle", bundle);

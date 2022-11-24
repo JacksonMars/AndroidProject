@@ -44,10 +44,6 @@
             android:name=".SearchDestinationActivity"
             android:exported="true"
             android:parentActivityName=".SearchRouteActivity">
-
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
         </activity>
 
         <activity
