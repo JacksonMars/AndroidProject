@@ -29,6 +29,7 @@ public class SearchDestinationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search_destination);
 
         final LoadingDialog loadingDialog = new LoadingDialog(SearchDestinationActivity.this);
+        TransLinkTextFileParsing transLinkTextFileParsing = new TransLinkTextFileParsing(SearchDestinationActivity.this);
 
         // Get the intent
         Intent intent = getIntent();
@@ -62,8 +63,8 @@ public class SearchDestinationActivity extends AppCompatActivity {
                 // Get values for selected list item
                 String selectedDestination = listView.getItemAtPosition(position).toString(); // Stop num + name
                 TreeSet<String> tripIds = destinationsToTripIds.get(selectedDestination);
-                HashMap<String, String> stopIdTripIdMap = mapStopIdsToTripIds(tripIds); // Map stop ids for route's trips
-                HashMap<String, String> stops = mapStopStringsToStopIds(stopIdTripIdMap.keySet()); // Map stop strings to ids
+                HashMap<String, String> stopIdTripIdMap = transLinkTextFileParsing.mapStopIdsToTripIds(tripIds); // Map stop ids for route's trips
+                HashMap<String, String> stops = transLinkTextFileParsing.mapStopStringsToStopIds(stopIdTripIdMap.keySet()); // Map stop strings to ids
 
                 // Create an intent to pass data
                 Intent newIntent = new Intent(view.getContext(), SearchStopActivity.class);
@@ -81,88 +82,5 @@ public class SearchDestinationActivity extends AppCompatActivity {
                 startActivity(newIntent);
             }, 0);
         });
-    }
-
-    /**
-     * Map stop ids to their trip ids.
-     * @param tripIds a TreeSet
-     * @return a Hashmap of stop ids mapped to trip ids
-     */
-    public HashMap<String, String> mapStopIdsToTripIds(TreeSet<String> tripIds) {
-        HashMap<String, String> stopTripMap = new HashMap<>();
-        try {
-            //Read the file
-            InputStream inputStream = getBaseContext().getResources().openRawResource(R.raw.stop_times);
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            bufferedReader.readLine();
-            String line = bufferedReader.readLine();
-
-            while (line != null) {
-                //Use string.split to load a string array with the values from the line of
-                //the file, using a comma as the delimiter
-                String[] tokenize = line.split(",");
-                String tripId = tokenize[0];
-                String stopId = tokenize[3];
-
-                if (tripIds.contains(tripId)) {
-                    stopTripMap.put(stopId, tripId);
-                }
-
-                line = bufferedReader.readLine();
-            }
-            //Close reader, catch errors
-            bufferedReader.close();
-            inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return stopTripMap;
-    }
-
-    /**
-     * Return a TreeSet of stop names from a set of stop ids.
-     * @param stopIds a TreeSet
-     * @return a TreeSet of stop names
-     */
-    public HashMap<String, String> mapStopStringsToStopIds(Set<String> stopIds) {
-        HashMap<String, String> stopStringStopIdMap = new HashMap<>();
-
-        try {
-            //Read the file
-            InputStream inputStream = getBaseContext().getResources().openRawResource(R.raw.stops);
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            bufferedReader.readLine();
-            String line = bufferedReader.readLine();
-
-            while (line != null) {
-                //Use string.split to load a string array with the values from the line of
-                //the file, using a comma as the delimiter
-                String[] tokenize = line.split(",");
-                String stopId = tokenize[0];
-                String stopCode = tokenize[1];
-                String stopName = tokenize[2];
-
-                if (stopIds.contains(stopId)) {
-                    String stopString;
-                    try {
-                        String[] stopNameSplit = stopName.split("bound "); // Remove direction
-                        stopString = String.format("%s: %s", stopCode, stopNameSplit[1]);
-                    }
-                    catch (ArrayIndexOutOfBoundsException e) {
-                        stopString= String.format("%s: %s", stopCode, stopName);
-                    }
-
-                    stopStringStopIdMap.put(stopString, stopId);
-                }
-                line = bufferedReader.readLine();
-            }
-            //Close reader, catch errors
-            bufferedReader.close();
-            inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return stopStringStopIdMap;
     }
 }

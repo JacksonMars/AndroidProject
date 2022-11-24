@@ -14,15 +14,9 @@ import android.widget.ListView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -36,11 +30,13 @@ public class SearchRouteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_route);
 
-        HashMap<String, String> routes = mapRouteStringsToRouteIds();
+        final LoadingDialog loadingDialog = new LoadingDialog(SearchRouteActivity.this);
+        TransLinkTextFileParsing transLinkTextFileParsing = new TransLinkTextFileParsing(SearchRouteActivity.this);
+
+        HashMap<String, String> routes = transLinkTextFileParsing.mapRouteStringsToRouteIds();
         Set<String> routesKeySet = routes.keySet();
         ArrayList<String> routeStrings = new ArrayList<>(routesKeySet);
         routeStrings.sort(Comparator.naturalOrder());
-        final LoadingDialog loadingDialog = new LoadingDialog(SearchRouteActivity.this);
 
         // Set action bar text
         Objects.requireNonNull(getSupportActionBar()).setTitle("Please select a route");
@@ -62,7 +58,8 @@ public class SearchRouteActivity extends AppCompatActivity {
                 String[] selectedRouteComponents = selectedRoute.split(": ");
                 String routeNum = selectedRouteComponents[0];
                 String routeId = routes.get(selectedRoute); // Route id
-                HashMap<String, TreeSet<String>> destinationsToTripIds = mapRouteDestinationsToTripIds(routeId, routeNum); // Trip ids for this route
+                HashMap<String, TreeSet<String>> destinationsToTripIds =
+                        transLinkTextFileParsing.mapRouteDestinationsToTripIds(routeId, routeNum); // Trip ids for this route
 
                 // Create an intent to pass data
                 Intent intent = new Intent(view.getContext(), SearchDestinationActivity.class);
@@ -114,122 +111,5 @@ public class SearchRouteActivity extends AppCompatActivity {
         }
 
         return super.onCreateOptionsMenu(menu);
-    }
-
-    /**
-     * Map route strings (route number + route name) to their route ids.
-     * @return HashMap of route strings mapped to route ids
-     */
-    public HashMap<String, String> mapRouteStringsToRouteIds() {
-        HashMap<String, String> routes = new HashMap<>();
-
-        try {
-            //Read the file
-            InputStream inputStream = getBaseContext().getResources().openRawResource(R.raw.routes);
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            bufferedReader.readLine();
-            String line = bufferedReader.readLine();
-
-            while (line != null) {
-                //Use string.split to load a string array with the values from the line of
-                //the file, using a comma as the delimiter
-                String[] tokenize = line.split(",");
-                String routeId = tokenize[0];
-                String busNum = tokenize[2];
-                String routeName = tokenize[3];
-
-                //Trains have no bus number, do not add these to routes
-                String routeString;
-                if (!busNum.isEmpty()) {
-                    routeString = String.format("%s: %s", busNum, routeName);
-                    routes.put(routeString, routeId);
-                }
-
-                line = bufferedReader.readLine();
-            }
-            //Close reader, catch errors
-            bufferedReader.close();
-            inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return routes;
-    }
-
-    /**
-     * Reformat destination strings to follow 'To destination' format
-     * @param destination a String
-     * @return formatted destination String
-     */
-    public static String formatDestination(String destination, String routeNum) {
-        String[] destinationSplit = destination.split(" ");
-        List<String> destinationArrayList = new ArrayList<>(Arrays.asList(destinationSplit));
-
-        // Remove initial route number from string
-        if (routeNum.contains(destinationSplit[0])) {
-            destinationArrayList.remove(0);
-        }
-
-        // Remove NightBus from NightBus routes
-        if (routeNum.contains("N")) {
-            destinationArrayList.remove("NightBus");
-        }
-
-        // Remove any lone 'to's
-        destinationArrayList.remove("To");
-        destinationArrayList.remove("to");
-
-        // Special case for WCE
-        if (Objects.equals(routeNum, "WCE")) {
-            destinationArrayList.remove("West");
-            destinationArrayList.remove("Coast");
-            destinationArrayList.remove("Express");
-            destinationArrayList.remove("Train");
-        }
-
-        // Add initial To
-        destinationArrayList.add(0, "To");
-
-        destinationSplit = destinationArrayList.toArray(new String[0]);
-        return String.join(" ", destinationSplit);
-    }
-
-    public HashMap<String, TreeSet<String>> mapRouteDestinationsToTripIds(String selectedRouteId, String routeNum) {
-        HashMap<String, TreeSet<String>> destinations = new HashMap<>();
-
-        try {
-            //Read the file
-            InputStream inputStream = getBaseContext().getResources().openRawResource(R.raw.trips);
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            bufferedReader.readLine();
-            String line = bufferedReader.readLine();
-
-            while (line != null) {
-                //Use string.split to load a string array with the values from the line of
-                //the file, using a comma as the delimiter
-                String[] tokenize = line.split(",");
-                String fileRouteId = tokenize[0];
-                String tripId = tokenize[2];
-                String destination = tokenize[3];
-
-                if (Objects.equals(selectedRouteId, fileRouteId)) {
-                    destination = formatDestination(destination, routeNum);
-                    if (!destinations.containsKey(destination)) {
-                        destinations.put(destination, new TreeSet<>());
-                    }
-                    Objects.requireNonNull(destinations.get(destination)).add(tripId);
-                }
-
-                line = bufferedReader.readLine();
-            }
-            //Close reader, catch errors
-            bufferedReader.close();
-            inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return destinations;
     }
 }
