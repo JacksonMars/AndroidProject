@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -105,7 +104,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             }
         });
 
-        showActiveBusses(googleMap);
+        markActiveBusses(googleMap);
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(start, 13));
     }
@@ -181,26 +180,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    public void showActiveBusses(@NonNull GoogleMap googleMap) {
-        if (activeBusses.size() == 0) {
-            Toast.makeText(MapFragment.this.requireActivity(),
-                            "No active busses for this route",
-                            Toast.LENGTH_LONG)
-                    .show();
-        }
+    public void markActiveBusses(@NonNull GoogleMap googleMap) {
+        if (!(activeBusses == null)) {
+            // Mark active busses
+            for (int i = 0; i < activeBusses.size(); i++) {
+                HashMap<String, String> activeBus = activeBusses.get(i);
+                String busNum = activeBus.get("busNum");
+                double latitude = Double.parseDouble(Objects.requireNonNull(activeBus.get("latitude")));
+                double longitude = Double.parseDouble(Objects.requireNonNull(activeBus.get("longitude")));
 
-        // Mark active busses
-        for (int i = 0; i < activeBusses.size(); i++) {
-            HashMap<String, String> activeBus = activeBusses.get(i);
-            String busNum = activeBus.get("busNum");
-            double latitude = Double.parseDouble(Objects.requireNonNull(activeBus.get("latitude")));
-            double longitude = Double.parseDouble(Objects.requireNonNull(activeBus.get("longitude")));
-
-            LatLng busCoordinates = new LatLng(latitude, longitude);
-            googleMap.addMarker(new MarkerOptions()
-                    .position(busCoordinates)
-                    .title("Bus No. " + busNum)
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.bus_clipart)));
+                LatLng busCoordinates = new LatLng(latitude, longitude);
+                googleMap.addMarker(new MarkerOptions()
+                        .position(busCoordinates)
+                        .title("Bus No. " + busNum)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.bus_clipart)));
+            }
         }
     }
 

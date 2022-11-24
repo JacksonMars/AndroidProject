@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -66,7 +65,7 @@ public class SearchStopActivity extends AppCompatActivity {
                 String tripId = stopIdTripIdMap.get(stopId); // Trip id
                 String stopName = stopStrings.get(position);
                 RealTimeBusInfoService realTimeBusInfoService = new RealTimeBusInfoService(SearchStopActivity.this);
-                realTimeBusInfoService.getActiveBusses(selectedStopNum, routeNum, new RealTimeBusInfoService.VolleyResponseListener() {
+                realTimeBusInfoService.getActiveBusList(selectedStopNum, routeNum, new RealTimeBusInfoService.VolleyResponseListener() {
 
                     //Async necessary to get active bus locations from API
                     @Override
