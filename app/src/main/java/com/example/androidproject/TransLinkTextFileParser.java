@@ -3,8 +3,6 @@ package com.example.androidproject;
 import android.app.Activity;
 import android.content.Context;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,11 +15,14 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class TransLinkTextFileParsing {
+/**
+ * Responsible for all TransLink text parsing.
+ */
+public class TransLinkTextFileParser {
     Activity activity;
     Context context;
 
-    TransLinkTextFileParsing(Activity activity) {
+    TransLinkTextFileParser(Activity activity) {
         this.activity = activity;
         this.context = this.activity.getBaseContext();
     }

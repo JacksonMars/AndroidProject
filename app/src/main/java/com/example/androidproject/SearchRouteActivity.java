@@ -31,9 +31,9 @@ public class SearchRouteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search_route);
 
         final LoadingDialog loadingDialog = new LoadingDialog(SearchRouteActivity.this);
-        TransLinkTextFileParsing transLinkTextFileParsing = new TransLinkTextFileParsing(SearchRouteActivity.this);
+        TransLinkTextFileParser transLinkTextFileParser = new TransLinkTextFileParser(SearchRouteActivity.this);
 
-        HashMap<String, String> routes = transLinkTextFileParsing.mapRouteStringsToRouteIds();
+        HashMap<String, String> routes = transLinkTextFileParser.mapRouteStringsToRouteIds();
         Set<String> routesKeySet = routes.keySet();
         ArrayList<String> routeStrings = new ArrayList<>(routesKeySet);
         routeStrings.sort(Comparator.naturalOrder());
@@ -59,7 +59,7 @@ public class SearchRouteActivity extends AppCompatActivity {
                 String routeNum = selectedRouteComponents[0];
                 String routeId = routes.get(selectedRoute); // Route id
                 HashMap<String, TreeSet<String>> destinationsToTripIds =
-                        transLinkTextFileParsing.mapRouteDestinationsToTripIds(routeId, routeNum); // Trip ids for this route
+                        transLinkTextFileParser.mapRouteDestinationsToTripIds(routeId, routeNum); // Trip ids for this route
 
                 // Create an intent to pass data
                 Intent intent = new Intent(view.getContext(), SearchDestinationActivity.class);

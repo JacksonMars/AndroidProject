@@ -8,10 +8,6 @@ import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -29,7 +25,7 @@ public class SearchDestinationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search_destination);
 
         final LoadingDialog loadingDialog = new LoadingDialog(SearchDestinationActivity.this);
-        TransLinkTextFileParsing transLinkTextFileParsing = new TransLinkTextFileParsing(SearchDestinationActivity.this);
+        TransLinkTextFileParser transLinkTextFileParser = new TransLinkTextFileParser(SearchDestinationActivity.this);
 
         // Get the intent
         Intent intent = getIntent();
@@ -63,8 +59,8 @@ public class SearchDestinationActivity extends AppCompatActivity {
                 // Get values for selected list item
                 String selectedDestination = listView.getItemAtPosition(position).toString(); // Stop num + name
                 TreeSet<String> tripIds = destinationsToTripIds.get(selectedDestination);
-                HashMap<String, String> stopIdTripIdMap = transLinkTextFileParsing.mapStopIdsToTripIds(tripIds); // Map stop ids for route's trips
-                HashMap<String, String> stops = transLinkTextFileParsing.mapStopStringsToStopIds(stopIdTripIdMap.keySet()); // Map stop strings to ids
+                HashMap<String, String> stopIdTripIdMap = transLinkTextFileParser.mapStopIdsToTripIds(tripIds); // Map stop ids for route's trips
+                HashMap<String, String> stops = transLinkTextFileParser.mapStopStringsToStopIds(stopIdTripIdMap.keySet()); // Map stop strings to ids
 
                 // Create an intent to pass data
                 Intent newIntent = new Intent(view.getContext(), SearchStopActivity.class);
