@@ -38,11 +38,14 @@ public class SearchStopActivity extends AppCompatActivity {
         // Option 2: Extract data from bundle
         Bundle bundle = intent.getBundleExtra("bundle");
         String routeNum = bundle.getString("routeNum");
+        String selectedRoute = bundle.getString("route");
         String selectedDestination = bundle.getString("selectedDestination");
         HashMap<String, String> stopIdTripIdMap = (HashMap<String, String>) bundle.getSerializable("stopIdTripIdMap");
         HashMap<String, String> stops = (HashMap<String, String>) bundle.getSerializable("stops");
 
-        Objects.requireNonNull(getSupportActionBar()).setTitle(routeNum + ": " + selectedDestination);
+        // Set Action bar to show selected route and destination
+        Objects.requireNonNull(getSupportActionBar()).setTitle(selectedRoute);
+        Objects.requireNonNull(getSupportActionBar()).setSubtitle(selectedDestination);
 
         // Put stop strings in ArrayList, sort
         Set<String> stopsKeySet = stops.keySet();

@@ -42,6 +42,9 @@ public class SearchRouteActivity extends AppCompatActivity {
         routeStrings.sort(Comparator.naturalOrder());
         final LoadingDialog loadingDialog = new LoadingDialog(SearchRouteActivity.this);
 
+        // Set action bar text
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Please select a route");
+
         //Create adapter for routes listview
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, routeStrings);
         listView = findViewById(R.id.route_search_results);

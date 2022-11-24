@@ -39,6 +39,7 @@ public class SearchDestinationActivity extends AppCompatActivity {
         HashMap<String, TreeSet<String>> destinationsToTripIds =
                 (HashMap<String, TreeSet<String>>) bundle.getSerializable("destinationsToTripIds");
 
+        // Set Action Bar to show selected route
         Objects.requireNonNull(getSupportActionBar()).setTitle(selectedRoute);
 
         // Put stop strings in ArrayList, sort
