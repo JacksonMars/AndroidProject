@@ -137,8 +137,15 @@ public class SearchDestinationActivity extends AppCompatActivity {
                 String stopName = tokenize[2];
 
                 if (stopIds.contains(stopId)) {
-                    String[] stopNameSplit = stopName.split("@ ");
-                    String stopString = String.format("%s: %s", stopCode, stopNameSplit[1]);
+                    String stopString;
+                    try {
+                        String[] stopNameSplit = stopName.split("bound "); // Remove direction
+                        stopString = String.format("%s: %s", stopCode, stopNameSplit[1]);
+                    }
+                    catch (ArrayIndexOutOfBoundsException e) {
+                        stopString= String.format("%s: %s", stopCode, stopName);
+                    }
+
                     stopStringStopIdMap.put(stopString, stopId);
                 }
                 line = bufferedReader.readLine();
