@@ -171,6 +171,11 @@ public class SearchRouteActivity extends AppCompatActivity {
             destinationArrayList.remove(0);
         }
 
+        // Remove NightBus from NightBus routes
+        if (routeNum.contains("N")) {
+            destinationArrayList.remove("NightBus");
+        }
+
         // Remove any lone 'to's
         destinationArrayList.remove("To");
         destinationArrayList.remove("to");
