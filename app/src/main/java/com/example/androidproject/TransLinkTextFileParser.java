@@ -68,6 +68,30 @@ public class TransLinkTextFileParser {
     }
 
     /**
+     * Returns a TreeSet of trip ids for a given route.
+     * @param routeId a String
+     * @return TreeSet of trip ids
+     */
+    public TreeSet<String> getTripIds(String routeId) {
+        TreeSet<String> tripIds = new TreeSet<>();
+        ArrayList<String[]> tokenizedLines = tokenizeFileLines("trips");
+
+        for (String[] tokenize : tokenizedLines) {
+            String fileRouteId = tokenize[0];
+            String tripId = tokenize[2];
+            String serviceId = tokenize[1];
+
+            if (Objects.equals(routeId, fileRouteId)) {
+                if (serviceId.equals("1")) {
+                    tripIds.add(tripId);
+                }
+            }
+        }
+
+        return tripIds;
+    }
+
+    /**
      * Map stop ids to their trip ids.
      * @param tripIds a TreeSet
      * @return a Hashmap of stop ids mapped to trip ids

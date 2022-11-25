@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
             Bundle bundle = intent.getBundleExtra("bundle");
             String route = bundle.getString("route");
             String tripId = bundle.getString("tripId");
+            ArrayList<String> tripIdsArrayList = bundle.getStringArrayList("tripIds");
             TextView textView = findViewById(R.id.route);
             textView.setText(route);
 
@@ -71,8 +72,11 @@ public class MainActivity extends AppCompatActivity {
                         selectedFragment = new ScheduleFragment();
                         Bundle scheduleBundle = new Bundle();
 
-                        String chosenStop = ((MapFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container)).getCurrentStopNumber();
-                        scheduleBundle.putString("stopNumber", chosenStop);
+                        String chosenStopNumber = ((MapFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container)).getCurrentStopNumber();
+                        String chosenStopName = ((MapFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container)).getCurrentStopName();
+                        scheduleBundle.putString("stopNumber", chosenStopNumber);
+                        scheduleBundle.putString("stopName", chosenStopName);
+                        scheduleBundle.putStringArrayList("tripIds", tripIdsArrayList);
                         selectedFragment.setArguments(scheduleBundle);
                         break;
                     default:

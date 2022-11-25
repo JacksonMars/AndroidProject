@@ -60,6 +60,8 @@ public class SearchRouteActivity extends AppCompatActivity {
                 String routeId = routes.get(selectedRoute); // Route id
                 HashMap<String, TreeSet<String>> destinationsToTripIds =
                         transLinkTextFileParser.mapRouteDestinationsToTripIds(routeId, routeNum); // Trip ids for this route
+                TreeSet<String> tripIds = transLinkTextFileParser.getTripIds(routeId); // Trip ids for this route
+                ArrayList<String> tripIdsArrayList = new ArrayList<>(tripIds);
 
                 // Create an intent to pass data
                 Intent intent = new Intent(view.getContext(), SearchDestinationActivity.class);
@@ -69,6 +71,7 @@ public class SearchRouteActivity extends AppCompatActivity {
                 bundle.putString("route", selectedRoute);
                 bundle.putString("routeNum", routeNum);
                 bundle.putSerializable("destinationsToTripIds", destinationsToTripIds);
+                bundle.putStringArrayList("tripIds", tripIdsArrayList);
                 intent.putExtra("bundle", bundle);
 
                 // Close loading dialog

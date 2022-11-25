@@ -40,6 +40,7 @@ public class SearchStopActivity extends AppCompatActivity {
         String routeNum = bundle.getString("routeNum");
         String selectedRoute = bundle.getString("route");
         String selectedDestination = bundle.getString("selectedDestination");
+        ArrayList<String> tripIdsArrayList = bundle.getStringArrayList("tripIds");
         HashMap<String, String> stopIdTripIdMap = (HashMap<String, String>) bundle.getSerializable("stopIdTripIdMap");
         HashMap<String, String> stops = (HashMap<String, String>) bundle.getSerializable("stops");
 
@@ -108,6 +109,7 @@ public class SearchStopActivity extends AppCompatActivity {
                         bundle.putSerializable("activeBusses", activeBusses);
                         bundle.putString("tripId", tripId);
                         bundle.putString("stopName", stopName);
+                        bundle.putStringArrayList("tripIds", tripIdsArrayList);
 
                         // Add bundle to new intent
                         newIntent.putExtra("bundle", bundle);
