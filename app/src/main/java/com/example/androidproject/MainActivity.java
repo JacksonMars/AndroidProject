@@ -10,12 +10,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Comparator;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -73,8 +68,12 @@ public class MainActivity extends AppCompatActivity {
                         selectedFragment = new ScheduleFragment();
                         Bundle scheduleBundle = new Bundle();
 
-                        String chosenStopNumber = ((MapFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container)).getCurrentStopNumber();
-                        String chosenStopName = ((MapFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container)).getCurrentStopName();
+                        String chosenStopNumber = ((MapFragment) getSupportFragmentManager()
+                                .findFragmentById(R.id.fragment_container))
+                                .getCurrentStopNumber();
+                        String chosenStopName = ((MapFragment) getSupportFragmentManager()
+                                .findFragmentById(R.id.fragment_container))
+                                .getCurrentStopName();
                         scheduleBundle.putString("stopNumber", chosenStopNumber);
                         scheduleBundle.putString("stopName", chosenStopName);
                         scheduleBundle.putStringArrayList("tripIds", tripIdsArrayList);
@@ -84,7 +83,10 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (selectedFragment != null) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragment_container, selectedFragment)
+                            .commit();
                 }
                 return false;
             });
