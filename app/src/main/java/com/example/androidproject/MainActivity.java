@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         final LoadingDialog loadingDialog = new LoadingDialog(MainActivity.this);
+        TransLinkTextFileParser transLinkTextFileParser = new TransLinkTextFileParser(MainActivity.this);
 
         loadingDialog.startLoadingDialog();
 
@@ -43,8 +44,8 @@ public class MainActivity extends AppCompatActivity {
             // Set bottom navbar
             BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 
-            ArrayList<String> stopIds = getStopIds(tripId);
-            ArrayList<String> allCoordinates = allStopCoordinates(stopIds);
+            ArrayList<String> stopIds = transLinkTextFileParser.getStopIds(tripId);
+            ArrayList<String> allCoordinates = transLinkTextFileParser.allStopCoordinates(stopIds);
 
             // Set map fragment as default in frame layout
             bundle.putStringArrayList("coordinates", allCoordinates);
@@ -88,67 +89,5 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             });
         }, 0);
-    }
-
-    public ArrayList<String> getStopIds(String intendedTripId) {
-        ArrayList<String> allStops = new ArrayList<>();
-        try {
-            InputStream inputStream = getBaseContext().getResources().openRawResource(R.raw.stop_times);
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            bufferedReader.readLine();
-            String line = bufferedReader.readLine();
-
-            while(line != null) {
-                String[] tokenize = line.split(",");
-                String routeId = tokenize[0];
-                if(routeId.equals(intendedTripId)) {
-                    allStops.add(tokenize[1] + "," + tokenize[3]);
-                }
-                line = bufferedReader.readLine();
-            }
-
-            bufferedReader.close();
-            inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        allStops.sort(Comparator.naturalOrder());
-
-        return allStops;
-    }
-
-    public String getStopCoordinates(String intendedStopId) {
-        String coordinates = null;
-        try {
-            InputStream inputStream = getBaseContext().getResources().openRawResource(R.raw.stops);
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            bufferedReader.readLine();
-            String line = bufferedReader.readLine();
-
-            while(line != null && coordinates == null) {
-                String[] tokenize = line.split(",");
-                String stopId = tokenize[0];
-                if(stopId.equals(intendedStopId)) {
-                    coordinates = tokenize[1] + ": " + tokenize[2] + "/" + tokenize[4] + "," + tokenize[5];
-                }
-                line = bufferedReader.readLine();
-            }
-
-            bufferedReader.close();
-            inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return coordinates;
-    }
-
-    public ArrayList<String> allStopCoordinates(ArrayList<String> stopIds) {
-        ArrayList<String> allCoordinates = new ArrayList<>();
-        for(int i = 0; i < stopIds.size(); i++) {
-            allCoordinates.add(getStopCoordinates(stopIds.get(i).split(",")[1]));
-        }
-        return allCoordinates;
     }
 }

@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -234,5 +235,60 @@ public class TransLinkTextFileParser {
 
         destinationSplit = destinationArrayList.toArray(new String[0]);
         return String.join(" ", destinationSplit);
+    }
+
+    /**
+     * Get all stop ids for a given trip id.
+     * @param intendedTripId a String
+     * @return ArrayList containing all stop ids for a trip id
+     */
+    public ArrayList<String> getStopIds(String intendedTripId) {
+        ArrayList<String> allStops = new ArrayList<>();
+        ArrayList<String[]> tokenizedLines = tokenizeFileLines("stop_times");
+
+        for (String[] tokenize : tokenizedLines) {
+            String routeId = tokenize[0];
+            if(routeId.equals(intendedTripId)) {
+                allStops.add(tokenize[1] + "," + tokenize[3]);
+            }
+        }
+
+        allStops.sort(Comparator.naturalOrder());
+
+        return allStops;
+    }
+
+    /**
+     * Obtain all stop coordinates for a given trip id.
+     * @param intendedStopId a String
+     * @return ArrayList containing all stop coordinates for a given trip id
+     */
+    public String getStopCoordinates(String intendedStopId) {
+        String coordinates = null;
+        ArrayList<String[]> tokenizedLines = tokenizeFileLines("stops");
+
+        while (coordinates == null) {
+            for (String[] tokenize : tokenizedLines) {
+                String stopId = tokenize[0];
+                if (stopId.equals(intendedStopId)) {
+                    coordinates = tokenize[1] + ": " + tokenize[2] + "/" + tokenize[4] + "," + tokenize[5];
+                }
+            }
+        }
+
+        return coordinates;
+    }
+
+    /**
+     * Obtain all stop coordinates for a given ArrayList of stop ids.
+     * @param stopIds an ArrayList
+     * @return ArrayList containing stop coordinates
+     */
+    public ArrayList<String> allStopCoordinates(ArrayList<String> stopIds) {
+        ArrayList<String> allCoordinates = new ArrayList<>();
+        for(int i = 0; i < stopIds.size(); i++) {
+            allCoordinates.add(getStopCoordinates(stopIds.get(i).split(",")[1]));
+        }
+        return allCoordinates;
     }
 }
