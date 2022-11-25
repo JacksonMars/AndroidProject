@@ -58,6 +58,7 @@ public class SearchRouteActivity extends AppCompatActivity {
                 String routeNum = selectedRouteComponents[0];
                 String routeId = routes.get(selectedRoute); // Route id
                 TreeSet<String> tripIds = getTripIds(routeId); // Trip ids for this route
+                ArrayList<String> tripIdsArrayList = new ArrayList<>(tripIds);
                 HashMap<String, String> stopIdTripIdMap = mapStopIdsToTripIds(tripIds); // Map stop ids for route's trips
                 HashMap<String, String> stops = mapStopStringsToStopIds(stopIdTripIdMap.keySet()); // Map stop strings to ids
 
@@ -70,6 +71,7 @@ public class SearchRouteActivity extends AppCompatActivity {
                 bundle.putString("routeNum", routeNum);
                 bundle.putSerializable("stopIdTripIdMap", stopIdTripIdMap);
                 bundle.putSerializable("stops", stops);
+                bundle.putStringArrayList("tripIds", tripIdsArrayList);
                 intent.putExtra("bundle", bundle);
 
                 // Close loading dialog
@@ -175,9 +177,12 @@ public class SearchRouteActivity extends AppCompatActivity {
                 String[] tokenize = line.split(",");
                 String fileRouteId = tokenize[0];
                 String tripId = tokenize[2];
+                String serviceId = tokenize[1];
 
                 if (Objects.equals(routeId, fileRouteId)) {
-                    tripIds.add(tripId);
+                    if (serviceId.equals("1")) {
+                        tripIds.add(tripId);
+                    }
                 }
 
                 line = bufferedReader.readLine();

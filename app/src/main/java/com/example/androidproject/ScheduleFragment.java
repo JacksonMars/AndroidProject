@@ -42,6 +42,8 @@ public class ScheduleFragment extends Fragment {
 
         String stopName = bundle.getString("stopName");
 
+        ArrayList<String> tripIdsArrayList = bundle.getStringArrayList("tripIds");
+
         // Build View for Fragment
         View view = inflater.inflate(R.layout.schedule_fragment, container, false);
 
@@ -51,7 +53,7 @@ public class ScheduleFragment extends Fragment {
         stopNameTextView.setText(stopName);
 //        stopNumberTextView.setText("StopNumber: " + stopCode);
 
-        HashMap<String, String> stops = getScheduleForStopId(stopId);
+        HashMap<String, String> stops = getScheduleForStopId(stopId, tripIdsArrayList);
         ArrayAdapter<String> arrayAdapter;
 
         Set<String> stopsKeySet = stops.keySet();
@@ -176,7 +178,8 @@ public class ScheduleFragment extends Fragment {
      * Map route strings (route number + route name) to their route ids.
      * @return HashMap of route strings mapped to route ids
      */
-    public HashMap<String, String> getScheduleForStopId(String stopIdString) {
+    public HashMap<String, String> getScheduleForStopId(String stopIdString,
+                                                        ArrayList<String> tripIdsArrayList) {
 
         HashMap<String, String> routes = new HashMap<>();
 
@@ -193,12 +196,20 @@ public class ScheduleFragment extends Fragment {
                 String[] tokenize = line.split(",");
                 String stopId = tokenize[3];
                 String arrivalTime = tokenize[1];
-                String departureTime = tokenize[1];
+                String tripId = tokenize[0];
 
+                // The issue is that because this is parsing from stop_times, it also contains
+                // northbound/southbound info. For example it will return 6:24:39 -> 13339465,
+                // which is not in the stop_id given.
+                // Potentially use set, rather than ArrayList?
+
+                // Service_id is the attribute for weekday/weekend/holiday
                 if (stopIdString.equals(stopId)) {
-                    String routeString;
-                    routeString = String.format("Arrival Time: %s", arrivalTime);
-                    routes.put(departureTime, routeString);
+                    if (tripIdsArrayList.contains(tripId)) {
+                        String routeString;
+                        routeString = String.format("Arrival Time: %s", arrivalTime);
+                        routes.put(arrivalTime, tripId);
+                    }
                 }
 
                 line = bufferedReader.readLine();
