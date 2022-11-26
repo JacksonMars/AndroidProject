@@ -94,11 +94,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(@NonNull Marker marker) {
-//                BitmapDrawable bitmapDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.green_square);
-//                Bitmap b = bitmapDraw.getBitmap();
-//                Bitmap smallMarker = Bitmap.createScaledBitmap(b, 25, 25, false);
-//                marker.setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
-
                 currentStop = marker.getTitle();
                 return false;
             }
