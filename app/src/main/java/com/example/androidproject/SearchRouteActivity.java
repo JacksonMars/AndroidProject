@@ -33,15 +33,14 @@ public class SearchRouteActivity extends AppCompatActivity {
         final LoadingDialog loadingDialog = new LoadingDialog(SearchRouteActivity.this);
         TransLinkTextFileParser transLinkTextFileParser = new TransLinkTextFileParser(SearchRouteActivity.this);
 
-        HashMap<String, String> routes = transLinkTextFileParser.mapRouteStringsToRouteIds();
-        Set<String> routesKeySet = routes.keySet();
-        ArrayList<String> routeStrings = new ArrayList<>(routesKeySet);
-        routeStrings.sort(Comparator.naturalOrder());
-
         // Set action bar text
         Objects.requireNonNull(getSupportActionBar()).setTitle("Please select a route");
 
-        //Create adapter for routes listview
+        //Create adapter for route strings in listview
+        HashMap<String, String> routeStringsToRouteIds = transLinkTextFileParser.mapRouteStringsToRouteIds();
+        ArrayList<String> routeStrings = new ArrayList<>(routeStringsToRouteIds.keySet());
+        routeStrings.sort(Comparator.naturalOrder());
+
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, routeStrings);
         listView = findViewById(R.id.route_search_results);
         listView.setAdapter(arrayAdapter);
@@ -57,7 +56,7 @@ public class SearchRouteActivity extends AppCompatActivity {
                 String selectedRoute = listView.getItemAtPosition(position).toString(); // Route num + name
                 String[] selectedRouteComponents = selectedRoute.split(": ");
                 String routeNum = selectedRouteComponents[0];
-                String routeId = routes.get(selectedRoute); // Route id
+                String routeId = routeStringsToRouteIds.get(selectedRoute); // Route id
                 HashMap<String, TreeSet<String>> destinationsToTripIds =
                         transLinkTextFileParser.mapRouteDestinationsToTripIds(routeId, routeNum); // Trip ids for this route
                 TreeSet<String> tripIds = transLinkTextFileParser.getTripIds(routeId); // Trip ids for this route
@@ -86,6 +85,7 @@ public class SearchRouteActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        // Set menu to search menu
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.search_menu, menu);
 
