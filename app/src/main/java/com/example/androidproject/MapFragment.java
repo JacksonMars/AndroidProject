@@ -19,7 +19,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.DirectionsApi;
@@ -42,7 +41,6 @@ import java.util.Objects;
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     SupportMapFragment mapFragment;
-    private GoogleMap mMap;
     private ArrayList<String> stopCoordinates;
     private ArrayList<HashMap<String, String>> activeBusses;
     private String currentStop = null;
@@ -55,14 +53,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      * @return view of the fragment
      */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Bundle bundle = this.getArguments();
         assert bundle != null;
         stopCoordinates = bundle.getStringArrayList("coordinates");
         activeBusses = (ArrayList<HashMap<String, String>>) bundle.getSerializable("activeBusses");
 
-        if(currentStop == null) {
+        if (currentStop == null) {
             currentStop = bundle.getString("stopName");
         }
 
@@ -87,7 +85,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      */
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-        mMap = googleMap;
         String[] startInfo = stopCoordinates.get(0).split("/");
         String[] startCoordinates = startInfo[1].split(",");
         LatLng start = new LatLng(Double.parseDouble(startCoordinates[0]), Double.parseDouble(startCoordinates[1]));
@@ -104,19 +101,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         if(path.size() > 0) {
             PolylineOptions opts = new PolylineOptions().addAll(path).color(Color.BLUE).width(5);
-            mMap.addPolyline(opts);
+            googleMap.addPolyline(opts);
         }
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(@NonNull Marker marker) {
-                currentStop = marker.getTitle();
-                return false;
-            }
+        googleMap.setOnMarkerClickListener(marker -> {
+            currentStop = marker.getTitle();
+            return false;
         });
 
         markActiveBusses(googleMap);
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(start, 13));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(start, 13));
     }
 
     /**

@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 
 /**
@@ -42,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
             String routeString = bundle.getString("routeString");
             String tripId = bundle.getString("tripId");
             ArrayList<String> tripIdsArrayList = bundle.getStringArrayList("tripIdsArrayList");
+            ArrayList<HashMap<String, String>> activeBusses =
+                    (ArrayList<HashMap<String, String>>) bundle.getSerializable("activeBusses");
 
             // Set map header to route name
             TextView textView = findViewById(R.id.route);
@@ -53,14 +56,14 @@ public class MainActivity extends AppCompatActivity {
             ArrayList<String> stopIds = transLinkTextFileParser.getStopIds(tripId);
             ArrayList<String> allCoordinates = transLinkTextFileParser.allStopCoordinates(stopIds);
 
-            bundle.putStringArrayList("coordinates", allCoordinates);
             Bundle mapBundle = new Bundle();
             mapBundle.putStringArrayList("coordinates", allCoordinates);
             mapBundle.putString("stopName", bundle.getString("stopName"));
+            mapBundle.putSerializable("activeBusses", activeBusses);
 
             // Set map fragment as default in frame layout
             Fragment mapFragment = new MapFragment();
-            mapFragment.setArguments(bundle);
+            mapFragment.setArguments(mapBundle);
             getSupportFragmentManager()
                     .beginTransaction().replace(R.id.fragment_container, mapFragment)
                     .commit();
