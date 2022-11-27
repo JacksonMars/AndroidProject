@@ -31,7 +31,7 @@ public class RealTimeBusInfoService {
      * Used for asynchronous API requesting.
      */
     public interface VolleyResponseListener {
-        void onError(String message);
+        void onError();
 
         void onResponse(ArrayList<HashMap<String, String>> activeBusses);
     }
@@ -75,7 +75,10 @@ public class RealTimeBusInfoService {
                 }
                 volleyResponseListener.onResponse(activeBussesList);
             },
-            error -> volleyResponseListener.onError("Error")) {
+            error -> {
+                volleyResponseListener.onError();
+                volleyResponseListener.onResponse(null);
+            }) {
                 /**
                  * Ensures the API returns a JSON array instead of XML.
                  */

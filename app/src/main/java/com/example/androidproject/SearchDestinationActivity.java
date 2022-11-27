@@ -30,14 +30,16 @@ public class SearchDestinationActivity extends AppCompatActivity {
         // Get the intent
         Intent intent = getIntent();
 
-        // Option 2: Extract data from bundle
+        // Extract data from bundle
         Bundle bundle = intent.getBundleExtra("bundle");
-        String selectedRoute = bundle.getString("route");
+        String routeString = bundle.getString("routeString");
+        String routeNum = bundle.getString("routeNum");
+        ArrayList<String> tripIdsArrayList = bundle.getStringArrayList("tripIdsArrayList");
         HashMap<String, TreeSet<String>> destinationsToTripIds =
                 (HashMap<String, TreeSet<String>>) bundle.getSerializable("destinationsToTripIds");
 
         // Set Action Bar to show selected route
-        Objects.requireNonNull(getSupportActionBar()).setTitle(selectedRoute);
+        Objects.requireNonNull(getSupportActionBar()).setTitle(routeString);
 
         // Put stop strings in ArrayList, sort
         Set<String> destinations = destinationsToTripIds.keySet();
@@ -58,18 +60,22 @@ public class SearchDestinationActivity extends AppCompatActivity {
             handler.postDelayed(() -> {
                 // Get values for selected list item
                 String selectedDestination = listView.getItemAtPosition(position).toString(); // Stop num + name
-                TreeSet<String> tripIds = destinationsToTripIds.get(selectedDestination);
-                HashMap<String, String> stopIdTripIdMap = transLinkTextFileParser.mapStopIdsToTripIds(tripIds); // Map stop ids for route's trips
+                TreeSet<String> tripIdsSet = destinationsToTripIds.get(selectedDestination);
+                HashMap<String, String> stopIdTripIdMap = transLinkTextFileParser.mapStopIdsToTripIds(tripIdsSet); // Map stop ids for route's trips
                 HashMap<String, String> stops = transLinkTextFileParser.mapStopStringsToStopIds(stopIdTripIdMap.keySet()); // Map stop strings to ids
 
                 // Create an intent to pass data
                 Intent newIntent = new Intent(view.getContext(), SearchStopActivity.class);
 
                 // Create a bundle to store data
-                bundle.putString("selectedDestination", selectedDestination);
-                bundle.putSerializable("stopIdTripIdMap", stopIdTripIdMap);
-                bundle.putSerializable("stops", stops);
-                newIntent.putExtra("bundle", bundle);
+                Bundle newBundle = new Bundle();
+                newBundle.putString("destinationString", selectedDestination);
+                newBundle.putString("routeString", routeString);
+                newBundle.putString("routeNum", routeNum);
+                newBundle.putStringArrayList("tripIdsArrayList", tripIdsArrayList);
+                newBundle.putSerializable("stopIdTripIdMap", stopIdTripIdMap);
+                newBundle.putSerializable("stopStringStopIdMap", stops);
+                newIntent.putExtra("bundle", newBundle);
 
                 // Close loading dialog
                 loadingDialog.dismissDialog();
