@@ -73,7 +73,6 @@ public class SearchStopActivity extends AppCompatActivity {
                 String selectedStopNum = selectedStopComponents[0]; // Stop num
                 String stopId = stops.get(selectedStop); // Stop id
                 String tripId = stopIdTripIdMap.get(stopId); // Trip id
-                String stopName = stopStrings.get(position);
                 RealTimeBusInfoService realTimeBusInfoService = new RealTimeBusInfoService(SearchStopActivity.this);
                 realTimeBusInfoService.getActiveBusList(selectedStopNum, routeNum, new RealTimeBusInfoService.VolleyResponseListener() {
 
@@ -95,7 +94,7 @@ public class SearchStopActivity extends AppCompatActivity {
                         newBundle.putSerializable("activeBusses", activeBusses);
                         newBundle.putString("routeString", routeString);
                         newBundle.putString("tripId", tripId);
-                        newBundle.putString("stopName", stopName);
+                        newBundle.putString("stopName", selectedStop);
                         newBundle.putStringArrayList("tripIdsArrayList", tripIdsArrayList);
 
                         // Add bundle to new intent
