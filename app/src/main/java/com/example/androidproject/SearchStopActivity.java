@@ -71,6 +71,7 @@ public class SearchStopActivity extends AppCompatActivity {
                 String selectedStop = listView.getItemAtPosition(position).toString(); // Stop num + name
                 String[] selectedStopComponents = selectedStop.split(": ");
                 String selectedStopNum = selectedStopComponents[0]; // Stop num
+                String stopName = selectedStopComponents[1];
                 String stopId = stops.get(selectedStop); // Stop id
                 String tripId = stopIdTripIdMap.get(stopId); // Trip id
                 RealTimeBusInfoService realTimeBusInfoService = new RealTimeBusInfoService(SearchStopActivity.this);
@@ -94,7 +95,9 @@ public class SearchStopActivity extends AppCompatActivity {
                         newBundle.putSerializable("activeBusses", activeBusses);
                         newBundle.putString("routeString", routeString);
                         newBundle.putString("tripId", tripId);
-                        newBundle.putString("stopName", selectedStop);
+                        newBundle.putString("stopString", selectedStop);
+                        newBundle.putString("stopNum", selectedStopNum);
+                        newBundle.putString("stopName", stopName);
                         newBundle.putStringArrayList("tripIdsArrayList", tripIdsArrayList);
 
                         // Add bundle to new intent

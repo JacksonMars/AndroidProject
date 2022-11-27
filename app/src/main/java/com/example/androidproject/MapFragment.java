@@ -61,7 +61,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         activeBusses = (ArrayList<HashMap<String, String>>) bundle.getSerializable("activeBusses");
 
         if (currentStop == null) {
-            currentStop = bundle.getString("stopName");
+            currentStop = bundle.getString("stopString");
         }
 
         // Initialize view
@@ -243,21 +243,5 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             allCoordinates.add(stopCoords);
         }
         return allCoordinates;
-    }
-
-    /**
-     * Get the stop number of the user's currently selected stop
-     * @return current stop number
-     */
-    public String getCurrentStopNumber() {
-        return currentStop.split("/")[0].split(":")[0];
-    }
-
-    /**
-     * Get the stop name of the user's currently selected stop
-     * @return current stop name
-     */
-    public String getCurrentStopName() {
-        return currentStop.split("/")[0].split(":")[1];
     }
 }
