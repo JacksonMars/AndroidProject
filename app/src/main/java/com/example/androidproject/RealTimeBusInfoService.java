@@ -16,6 +16,7 @@ import java.util.Map;
 
 /**
  * Service for getting active busses from TransLink API.
+ * Source: Java Android App using REST API - Network Data in Android Course by freeCodeCamp.org (YouTube)
  */
 public class RealTimeBusInfoService {
     public static final String API_KEY = "AdKqzDnSKgbtZdyDroOt";
