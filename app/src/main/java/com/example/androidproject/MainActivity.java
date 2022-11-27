@@ -13,8 +13,15 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.ArrayList;
 import java.util.Objects;
 
+/**
+ * Main activity of the application. Houses fragments for the Map and Schedule screens
+ */
 public class MainActivity extends AppCompatActivity {
 
+    /**
+     * Code to be executed when the MainActivity is created
+     * @param savedInstanceState a Bundle
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

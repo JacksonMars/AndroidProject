@@ -36,6 +36,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Fragment housing the map and related functions
+ */
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     SupportMapFragment mapFragment;
@@ -44,6 +47,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private ArrayList<HashMap<String, String>> activeBusses;
     private String currentStop = null;
 
+    /**
+     * Code to be executed when the MapFragment is created. Gets data from Bundle and prepares a map
+     * @param inflater inflater for the layout
+     * @param container container for views
+     * @param savedInstanceState a Bundle
+     * @return view of the fragment
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -70,6 +80,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         return view;
     }
 
+    /**
+     * Code to be executed when the Map object is ready. Parses data, draws the route, and places
+     * pins in current bus locations if the information is available
+     * @param googleMap a GoogleMap object
+     */
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
@@ -94,11 +109,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(@NonNull Marker marker) {
-//                BitmapDrawable bitmapDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.green_square);
-//                Bitmap b = bitmapDraw.getBitmap();
-//                Bitmap smallMarker = Bitmap.createScaledBitmap(b, 25, 25, false);
-//                marker.setIcon(BitmapDescriptorFactory.fromBitmap(smallMarker));
-
                 currentStop = marker.getTitle();
                 return false;
             }
@@ -109,6 +119,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(start, 13));
     }
 
+    /**
+     * Add segments to a route. Up to nine stops can be traversed at once
+     * @param stopsInfo a List of Strings containing info about each stop, such as latitude,
+     *                  longitude, stop number, and stop name
+     * @param path a List of LatLng objects. If a non-null path is passed, this method will add
+     *             to the path that is already there
+     * @param googleMap a GoogleMap object
+     */
     private void addToRoute(List<String> stopsInfo, List<LatLng> path, GoogleMap googleMap) {
         GeoApiContext context = new GeoApiContext.Builder()
                 .apiKey("AIzaSyA7B8cf57CuID9r8WHJCkmWa4P-cCGQNMo")
@@ -180,6 +198,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+    /**
+     * Mark active busses on the map using a pin. Buses are marked based on their current latitude
+     * and longitude
+     * @param googleMap a GoogleMap object
+     */
     public void markActiveBusses(@NonNull GoogleMap googleMap) {
         if (!(activeBusses == null)) {
             // Mark active busses
@@ -198,6 +221,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+    /**
+     * Get all stop names from a List containing stop info
+     * @param stopsInfo a List of Strings containing stop info
+     * @return an ArrayList of all stop names
+     */
     private ArrayList<String> getStopNames(List<String> stopsInfo) {
         ArrayList<String> allNames = new ArrayList<>();
         for(int i = 0; i < stopsInfo.size(); i++) {
@@ -208,6 +236,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         return allNames;
     }
 
+    /**
+     * Get coordinates for a List of stop info
+     * @param stopsInfo a List containing Strings of stop info
+     * @return latitude and longitude coordinates for each stop
+     */
     private ArrayList<String> getStopCoordinates(List<String> stopsInfo) {
         ArrayList<String> allCoordinates = new ArrayList<>();
         for(int i = 0; i < stopsInfo.size(); i++) {
@@ -218,10 +251,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         return allCoordinates;
     }
 
+    /**
+     * Get the stop number of the user's currently selected stop
+     * @return current stop number
+     */
     public String getCurrentStopNumber() {
         return currentStop.split("/")[0].split(":")[0];
     }
 
+    /**
+     * Get the stop name of the user's currently selected stop
+     * @return current stop name
+     */
     public String getCurrentStopName() {
         return currentStop.split("/")[0].split(":")[1];
     }
