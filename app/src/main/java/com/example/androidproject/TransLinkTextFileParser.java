@@ -79,10 +79,10 @@ public class TransLinkTextFileParser {
 
         for (String[] tokenize : tokenizedLines) {
             String fileRouteId = tokenize[0];
-            String tripId = tokenize[2];
-            String serviceId = tokenize[1];
 
             if (Objects.equals(routeId, fileRouteId)) {
+                String tripId = tokenize[2];
+                String serviceId = tokenize[1];
                 if (serviceId.equals("1")) {
                     tripIds.add(tripId);
                 }
@@ -167,6 +167,9 @@ public class TransLinkTextFileParser {
             }
         }
 
+        routes.remove("HD: HandyDART");
+        routes.remove("WCE: West Coast Express");
+
         return routes;
     }
 
@@ -222,16 +225,10 @@ public class TransLinkTextFileParser {
         destinationArrayList.remove("To");
         destinationArrayList.remove("to");
 
-        // Special case for WCE
-        if (Objects.equals(routeNum, "WCE")) {
-            destinationArrayList.remove("West");
-            destinationArrayList.remove("Coast");
-            destinationArrayList.remove("Express");
-            destinationArrayList.remove("Train");
+        if (!destinationArrayList.contains("Special")) {
+            // Add initial To
+            destinationArrayList.add(0, "To");
         }
-
-        // Add initial To
-        destinationArrayList.add(0, "To");
 
         destinationSplit = destinationArrayList.toArray(new String[0]);
         return String.join(" ", destinationSplit);
