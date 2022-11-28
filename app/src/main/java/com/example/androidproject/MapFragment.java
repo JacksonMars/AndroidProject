@@ -244,4 +244,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
         return allCoordinates;
     }
+
+    /* Get the stop number of the user's currently selected stop
+     * @return current stop number
+     */
+    public String getCurrentStopNumber() {
+        return currentStop.split("/")[0].split(":")[0];
+    }
+
+    /* Get the stop name of the user's currently selected stop
+     * @return current stop name
+     */
+    public String getCurrentStopName() {
+        return currentStop.split("/")[0].split(":")[1];
+    }
 }

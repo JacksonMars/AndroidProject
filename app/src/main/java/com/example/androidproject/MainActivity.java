@@ -85,8 +85,14 @@ public class MainActivity extends AppCompatActivity {
                         selectedFragment = new ScheduleFragment();
                         Bundle scheduleBundle = new Bundle();
 
-                        scheduleBundle.putString("stopNumber", stopNum);
-                        scheduleBundle.putString("stopName", stopName);
+                        String chosenStopNumber = ((MapFragment) Objects.requireNonNull(getSupportFragmentManager()
+                                .findFragmentById(R.id.fragment_container)))
+                                .getCurrentStopNumber();
+                        String chosenStopName = ((MapFragment) Objects.requireNonNull(getSupportFragmentManager()
+                                .findFragmentById(R.id.fragment_container)))
+                                .getCurrentStopName();
+                        scheduleBundle.putString("stopNumber", chosenStopNumber);
+                        scheduleBundle.putString("stopName", chosenStopName);
                         scheduleBundle.putStringArrayList("tripIdsArrayList", tripIdsArrayList);
                         selectedFragment.setArguments(scheduleBundle);
                         break;
