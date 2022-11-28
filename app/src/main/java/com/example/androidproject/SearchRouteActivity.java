@@ -53,10 +53,10 @@ public class SearchRouteActivity extends AppCompatActivity {
             Handler handler = new Handler();
             handler.postDelayed(() -> {
                 // Get values for selected list item
-                String selectedRoute = listView.getItemAtPosition(position).toString(); // Route num + name
-                String[] selectedRouteComponents = selectedRoute.split(": ");
+                String routeString = listView.getItemAtPosition(position).toString(); // Route num + name
+                String[] selectedRouteComponents = routeString.split(": ");
                 String routeNum = selectedRouteComponents[0];
-                String routeId = routeStringsToRouteIds.get(selectedRoute); // Route id
+                String routeId = routeStringsToRouteIds.get(routeString); // Route id
                 HashMap<String, TreeSet<String>> destinationsToTripIds =
                         transLinkTextFileParser.mapRouteDestinationsToTripIds(routeId, routeNum); // Trip ids for this route
                 TreeSet<String> tripIds = transLinkTextFileParser.getTripIds(routeId); // Trip ids for this route
@@ -67,10 +67,10 @@ public class SearchRouteActivity extends AppCompatActivity {
 
                 // Create a bundle to store data
                 Bundle bundle = new Bundle();
-                bundle.putString("route", selectedRoute);
+                bundle.putString("routeString", routeString);
                 bundle.putString("routeNum", routeNum);
                 bundle.putSerializable("destinationsToTripIds", destinationsToTripIds);
-                bundle.putStringArrayList("tripIds", tripIdsArrayList);
+                bundle.putStringArrayList("tripIdsArrayList", tripIdsArrayList);
                 intent.putExtra("bundle", bundle);
 
                 // Close loading dialog

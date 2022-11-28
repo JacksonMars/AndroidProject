@@ -35,17 +35,19 @@ public class SearchStopActivity extends AppCompatActivity {
         // Get the intent
         Intent intent = getIntent();
 
-        // Option 2: Extract data from bundle
+        // Extract data from bundle
         Bundle bundle = intent.getBundleExtra("bundle");
         String routeNum = bundle.getString("routeNum");
-        String selectedRoute = bundle.getString("route");
-        String selectedDestination = bundle.getString("selectedDestination");
-        ArrayList<String> tripIdsArrayList = bundle.getStringArrayList("tripIds");
-        HashMap<String, String> stopIdTripIdMap = (HashMap<String, String>) bundle.getSerializable("stopIdTripIdMap");
-        HashMap<String, String> stops = (HashMap<String, String>) bundle.getSerializable("stops");
+        String routeString = bundle.getString("routeString");
+        String selectedDestination = bundle.getString("destinationString");
+        ArrayList<String> tripIdsArrayList = bundle.getStringArrayList("tripIdsArrayList");
+        HashMap<String, String> stopIdTripIdMap =
+                (HashMap<String, String>) bundle.getSerializable("stopIdTripIdMap");
+        HashMap<String, String> stops =
+                (HashMap<String, String>) bundle.getSerializable("stopStringStopIdMap");
 
         // Set Action bar to show selected route and destination
-        Objects.requireNonNull(getSupportActionBar()).setTitle(selectedRoute);
+        Objects.requireNonNull(getSupportActionBar()).setTitle(routeString);
         Objects.requireNonNull(getSupportActionBar()).setSubtitle(selectedDestination);
 
         // Put stop strings in ArrayList, sort
@@ -69,50 +71,37 @@ public class SearchStopActivity extends AppCompatActivity {
                 String selectedStop = listView.getItemAtPosition(position).toString(); // Stop num + name
                 String[] selectedStopComponents = selectedStop.split(": ");
                 String selectedStopNum = selectedStopComponents[0]; // Stop num
+                String stopName = selectedStopComponents[1];
                 String stopId = stops.get(selectedStop); // Stop id
                 String tripId = stopIdTripIdMap.get(stopId); // Trip id
-                String stopName = stopStrings.get(position);
                 RealTimeBusInfoService realTimeBusInfoService = new RealTimeBusInfoService(SearchStopActivity.this);
                 realTimeBusInfoService.getActiveBusList(selectedStopNum, routeNum, new RealTimeBusInfoService.VolleyResponseListener() {
 
                     //Async necessary to get active bus locations from API
                     @Override
-                    public void onError(String message) {
+                    public void onError() {
                         Toast.makeText(SearchStopActivity.this,
                                 "No actives busses for this stop",
                                 Toast.LENGTH_LONG).show();
-
-                        // Create an intent to pass data
-                        Intent newIntent = new Intent(view.getContext(), MainActivity.class);
-
-                        // Put new info in bundle
-                        bundle.putString("tripId", tripId);
-                        bundle.putString("stopName", stopName);
-
-                        // Add bundle to new intent
-                        newIntent.putExtra("bundle", bundle);
-
-                        // Close loading dialog
-                        loadingDialog.dismissDialog();
-
-                        // Go to Map
-                        startActivity(newIntent);
                     }
 
                     @Override
                     public void onResponse(ArrayList<HashMap<String, String>> activeBusses) {
-
                         // Create an intent to pass data
                         Intent newIntent = new Intent(view.getContext(), MainActivity.class);
 
-                        // Put new info in bundle
-                        bundle.putSerializable("activeBusses", activeBusses);
-                        bundle.putString("tripId", tripId);
-                        bundle.putString("stopName", stopName);
-                        bundle.putStringArrayList("tripIds", tripIdsArrayList);
+                        // Create new bundle to store info
+                        Bundle newBundle = new Bundle();
+                        newBundle.putSerializable("activeBusses", activeBusses);
+                        newBundle.putString("routeString", routeString);
+                        newBundle.putString("tripId", tripId);
+                        newBundle.putString("stopString", selectedStop);
+                        newBundle.putString("stopNum", selectedStopNum);
+                        newBundle.putString("stopName", stopName);
+                        newBundle.putStringArrayList("tripIdsArrayList", tripIdsArrayList);
 
                         // Add bundle to new intent
-                        newIntent.putExtra("bundle", bundle);
+                        newIntent.putExtra("bundle", newBundle);
 
                         // Close loading dialog
                         loadingDialog.dismissDialog();

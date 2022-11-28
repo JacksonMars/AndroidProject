@@ -8,6 +8,10 @@ import android.os.Handler;
 
 import java.util.Objects;
 
+/**
+ * Splash page that appears on app startup.
+ * Source: Splash Screen - Android Studio Tutorial by Stevdza-San (YouTube)
+ */
 public class SplashActivity extends AppCompatActivity {
 
     @Override

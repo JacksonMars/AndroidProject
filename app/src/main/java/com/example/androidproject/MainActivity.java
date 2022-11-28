@@ -11,9 +11,18 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Objects;
 
+/**
+ * Main activity of the application. Houses fragments for the Map and Schedule screens
+ */
 public class MainActivity extends AppCompatActivity {
 
+    /**
+     * Code to be executed when the MainActivity is created
+     * @param savedInstanceState a Bundle
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,14 +36,22 @@ public class MainActivity extends AppCompatActivity {
         // using handler class to set time delay methods
         Handler handler = new Handler();
         handler.postDelayed(() -> {
+
             // Get information from search bundle
             Intent intent = getIntent();
             Bundle bundle = intent.getBundleExtra("bundle");
-            String route = bundle.getString("route");
+            String routeString = bundle.getString("routeString");
             String tripId = bundle.getString("tripId");
-            ArrayList<String> tripIdsArrayList = bundle.getStringArrayList("tripIds");
+            String stopString = bundle.getString("stopString");
+            String stopNum = bundle.getString("stopNum");
+            String stopName = bundle.getString("stopName");
+            ArrayList<String> tripIdsArrayList = bundle.getStringArrayList("tripIdsArrayList");
+            ArrayList<HashMap<String, String>> activeBusses =
+                    (ArrayList<HashMap<String, String>>) bundle.getSerializable("activeBusses");
+
+            // Set map header to route name
             TextView textView = findViewById(R.id.route);
-            textView.setText(route);
+            textView.setText(routeString);
 
             // Set bottom navbar
             BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
@@ -42,14 +59,14 @@ public class MainActivity extends AppCompatActivity {
             ArrayList<String> stopIds = transLinkTextFileParser.getStopIds(tripId);
             ArrayList<String> allCoordinates = transLinkTextFileParser.allStopCoordinates(stopIds);
 
-            // Set map fragment as default in frame layout
-            bundle.putStringArrayList("coordinates", allCoordinates);
-            Bundle newBundle = new Bundle();
-            newBundle.putStringArrayList("coordinates", allCoordinates);
-            newBundle.putString("stopName", bundle.getString("stopName"));
+            Bundle mapBundle = new Bundle();
+            mapBundle.putStringArrayList("coordinates", allCoordinates);
+            mapBundle.putString("stopString", stopString);
+            mapBundle.putSerializable("activeBusses", activeBusses);
 
+            // Set map fragment as default in frame layout
             Fragment mapFragment = new MapFragment();
-            mapFragment.setArguments(bundle);
+            mapFragment.setArguments(mapBundle);
             getSupportFragmentManager()
                     .beginTransaction().replace(R.id.fragment_container, mapFragment)
                     .commit();
@@ -68,15 +85,9 @@ public class MainActivity extends AppCompatActivity {
                         selectedFragment = new ScheduleFragment();
                         Bundle scheduleBundle = new Bundle();
 
-                        String chosenStopNumber = ((MapFragment) getSupportFragmentManager()
-                                .findFragmentById(R.id.fragment_container))
-                                .getCurrentStopNumber();
-                        String chosenStopName = ((MapFragment) getSupportFragmentManager()
-                                .findFragmentById(R.id.fragment_container))
-                                .getCurrentStopName();
-                        scheduleBundle.putString("stopNumber", chosenStopNumber);
-                        scheduleBundle.putString("stopName", chosenStopName);
-                        scheduleBundle.putStringArrayList("tripIds", tripIdsArrayList);
+                        scheduleBundle.putString("stopNumber", stopNum);
+                        scheduleBundle.putString("stopName", stopName);
+                        scheduleBundle.putStringArrayList("tripIdsArrayList", tripIdsArrayList);
                         selectedFragment.setArguments(scheduleBundle);
                         break;
                     default:

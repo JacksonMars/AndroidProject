@@ -38,8 +38,7 @@ public class ScheduleFragment extends Fragment {
         String stopId = getStopId(stopCode);
 
         String stopName = bundle.getString("stopName");
-
-        ArrayList<String> tripIdsArrayList = bundle.getStringArrayList("tripIds");
+        ArrayList<String> tripIdsArrayList = bundle.getStringArrayList("tripIdsArrayList");
 
         // Build View for Fragment
         View view = inflater.inflate(R.layout.schedule_fragment, container, false);

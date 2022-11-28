@@ -16,6 +16,7 @@ import java.util.Map;
 
 /**
  * Service for getting active busses from TransLink API.
+ * Source: Java Android App using REST API - Network Data in Android Course by freeCodeCamp.org (YouTube)
  */
 public class RealTimeBusInfoService {
     public static final String API_KEY = "AdKqzDnSKgbtZdyDroOt";
@@ -31,7 +32,7 @@ public class RealTimeBusInfoService {
      * Used for asynchronous API requesting.
      */
     public interface VolleyResponseListener {
-        void onError(String message);
+        void onError();
 
         void onResponse(ArrayList<HashMap<String, String>> activeBusses);
     }
@@ -75,7 +76,10 @@ public class RealTimeBusInfoService {
                 }
                 volleyResponseListener.onResponse(activeBussesList);
             },
-            error -> volleyResponseListener.onError("Error")) {
+            error -> {
+                volleyResponseListener.onError();
+                volleyResponseListener.onResponse(null);
+            }) {
                 /**
                  * Ensures the API returns a JSON array instead of XML.
                  */
