@@ -48,8 +48,6 @@ public class ScheduleFragment extends Fragment {
         stopNameTextView.setText(stopName);
 
         HashMap<String, String> stops = getScheduleForStopId(stopId, tripIdsArrayList);
-        ArrayAdapter<String> arrayAdapter;
-
         Set<String> stopsKeySet = stops.keySet();
         ArrayList<String> stopsStrings = new ArrayList<>(stopsKeySet);
         stopsStrings.sort(Comparator.naturalOrder());
@@ -66,30 +64,26 @@ public class ScheduleFragment extends Fragment {
             }
         });
 
-        // Testing out modulo function
-
         ArrayList<String> finalSchedule = formatSchedule(stopsStrings, currentTime);
 
         String nextBusTime = stopsStrings.get(0);
-
         long eta = findEta(currentTime, nextBusTime);
         String etaString = String.valueOf(eta);
-
 
         TextView etaValue = view.findViewById(R.id.scheduleFragNextBusEtaValue);
         etaValue.setText(etaString);
 
         // Create Adapter for Schedule Time in ListView
-        arrayAdapter = new ArrayAdapter<>(view.getContext(), android.R.layout.simple_list_item_1 , finalSchedule);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(view.getContext(), android.R.layout.simple_list_item_1 , finalSchedule);
         ListView listView = view.findViewById(R.id.scheduleFragStopTimes);
         listView.setAdapter(arrayAdapter);
-
 
         return view;
     }
 
-    // Function to print difference in
-    // time start_date and end_date
+    /*
+    Source: https://www.geeksforgeeks.org/find-the-duration-of-difference-between-two-dates-in-java/
+    */
     static long findEta(String start_date,
                         String end_date)
     {
@@ -125,6 +119,7 @@ public class ScheduleFragment extends Fragment {
         return 0;
     }
 
+    // Function to format and order schedule for display
     public ArrayList<String> formatSchedule(ArrayList<String> originalSchedule, String currentTime) {
 
         ArrayList<String> newSchedule = new ArrayList<>();
