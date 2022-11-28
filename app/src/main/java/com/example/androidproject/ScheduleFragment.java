@@ -7,10 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.fragment.app.Fragment;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,10 +45,8 @@ public class ScheduleFragment extends Fragment {
         View view = inflater.inflate(R.layout.schedule_fragment, container, false);
 
         // Edit Values in Fragment
-        TextView stopNumberTextView = (TextView) view.findViewById(R.id.scheduleFragStopNumber);
-        TextView stopNameTextView = (TextView) view.findViewById(R.id.scheduleFragStopName);
+        TextView stopNameTextView = view.findViewById(R.id.scheduleFragStopName);
         stopNameTextView.setText(stopName);
-//        stopNumberTextView.setText("StopNumber: " + stopCode);
 
         HashMap<String, String> stops = getScheduleForStopId(stopId, tripIdsArrayList);
         ArrayAdapter<String> arrayAdapter;
@@ -72,6 +67,9 @@ public class ScheduleFragment extends Fragment {
             }
         });
 
+        // Testing out modulo function
+
+        ArrayList<String> finalSchedule = formatSchedule(stopsStrings, currentTime);
 
         String nextBusTime = stopsStrings.get(0);
 
@@ -79,12 +77,12 @@ public class ScheduleFragment extends Fragment {
         String etaString = String.valueOf(eta);
 
 
-        TextView etaValue = (TextView) view.findViewById(R.id.scheduleFragNextBusEtaValue);
+        TextView etaValue = view.findViewById(R.id.scheduleFragNextBusEtaValue);
         etaValue.setText(etaString);
 
         // Create Adapter for Schedule Time in ListView
-        arrayAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1 , stopsStrings);
-        ListView listView = (ListView) view.findViewById(R.id.scheduleFragStopTimes);
+        arrayAdapter = new ArrayAdapter<>(view.getContext(), android.R.layout.simple_list_item_1 , finalSchedule);
+        ListView listView = view.findViewById(R.id.scheduleFragStopTimes);
         listView.setAdapter(arrayAdapter);
 
 
@@ -114,56 +112,11 @@ public class ScheduleFragment extends Fragment {
             long difference_In_Time
                     = d2.getTime() - d1.getTime();
 
-            // Calucalte time difference in seconds,
-            // minutes, hours, years, and days
-            long difference_In_Seconds
-                    = TimeUnit.MILLISECONDS
-                    .toSeconds(difference_In_Time)
-                    % 60;
-
             long difference_In_Minutes
                     = TimeUnit
                     .MILLISECONDS
                     .toMinutes(difference_In_Time)
                     % 60;
-
-            long difference_In_Hours
-                    = TimeUnit
-                    .MILLISECONDS
-                    .toHours(difference_In_Time)
-                    % 24;
-
-            long difference_In_Days
-                    = TimeUnit
-                    .MILLISECONDS
-                    .toDays(difference_In_Time)
-                    % 365;
-
-            long difference_In_Years
-                    = TimeUnit
-                    .MILLISECONDS
-                    .toDays(difference_In_Time)
-                    / 365l;
-
-            // Print the date difference in
-            // years, in days, in hours, in
-            // minutes, and in seconds
-            System.out.print(
-                    "Difference"
-                            + " between two dates is: ");
-
-            // Print result
-            System.out.println(
-                    difference_In_Years
-                            + " years, "
-                            + difference_In_Days
-                            + " days, "
-                            + difference_In_Hours
-                            + " hours, "
-                            + difference_In_Minutes
-                            + " minutes, "
-                            + difference_In_Seconds
-                            + " seconds");
 
             return difference_In_Minutes;
         }
@@ -173,11 +126,84 @@ public class ScheduleFragment extends Fragment {
         return 0;
     }
 
+    public ArrayList<String> formatSchedule(ArrayList<String> originalSchedule, String currentTime) {
 
-    /**
-     * Map route strings (route number + route name) to their route ids.
-     * @return HashMap of route strings mapped to route ids
-     */
+        ArrayList<String> newSchedule = new ArrayList<>();
+        String[] timeToken = currentTime.split(":");
+        String currentHourString = timeToken[0];
+        String currentMinuteString = timeToken[1];
+
+        int currentHour = Integer.parseInt(currentHourString);
+        int currentMinute = Integer.parseInt(currentMinuteString);
+
+        // Modulo Time
+        for (String s : originalSchedule) {
+            String[] tokenize = s.split(":");
+            String hour = tokenize[0];
+            String firstHourCharacter = Character.toString(hour.charAt(0));
+            String minute = tokenize[1];
+
+            if (firstHourCharacter.equals(" ")) {
+                hour = hour.replace(" ", "0");
+            }
+
+            int hourNumber = Integer.parseInt(hour);
+            int moduloHour = hourNumber % 24;
+
+            String moduloHourString = Integer.toString(moduloHour);
+            String newHour;
+
+            if (moduloHourString.length() == 1) {
+                newHour = "0" + moduloHour + ":" + minute;
+            } else {
+                newHour = moduloHour + ":" + minute;
+            }
+
+            newSchedule.add(newHour);
+        }
+
+        ArrayList<String> pastSchedule = new ArrayList<>();
+        ArrayList<String> upcomingSchedule = new ArrayList<>();
+
+        // Split past schedule and upcoming schedule
+        for (String time : newSchedule) {
+            String[] timeSplit = time.split(":");
+            String hourSplitString = timeSplit[0];
+            String minuteSplitString = timeSplit[1];
+            int hourSplit = Integer.parseInt(hourSplitString);
+            int minuteSplit = Integer.parseInt(minuteSplitString);
+
+            if (hourSplit < currentHour ) {
+                if (hourSplit > 3) {
+                    pastSchedule.add(time);
+                } else {
+                    upcomingSchedule.add(time);
+                }
+            } else if (hourSplit == currentHour) {
+                if (minuteSplit < currentMinute) {
+                    pastSchedule.add(time);
+                } else {
+                    upcomingSchedule.add(time);
+                }
+            } else {
+                upcomingSchedule.add(time);
+            }
+        }
+
+        Collections.sort(pastSchedule);
+
+        ArrayList<String> finalSchedule = new ArrayList<>();
+        finalSchedule.addAll(upcomingSchedule);
+        finalSchedule.addAll(pastSchedule);
+
+        return finalSchedule;
+    }
+
+
+        /**
+         * Map route strings (route number + route name) to their route ids.
+         * @return HashMap of route strings mapped to route ids
+         */
     public HashMap<String, String> getScheduleForStopId(String stopIdString,
                                                         ArrayList<String> tripIdsArrayList) {
 
@@ -191,19 +217,11 @@ public class ScheduleFragment extends Fragment {
             String line = bufferedReader.readLine();
 
             while (line != null) {
-                //Use string.split to load a string array with the values from the line of
-                //the file, using a comma as the delimiter
                 String[] tokenize = line.split(",");
                 String stopId = tokenize[3];
                 String arrivalTime = tokenize[1];
                 String tripId = tokenize[0];
 
-                // The issue is that because this is parsing from stop_times, it also contains
-                // northbound/southbound info. For example it will return 6:24:39 -> 13339465,
-                // which is not in the stop_id given.
-                // Potentially use set, rather than ArrayList?
-
-                // Service_id is the attribute for weekday/weekend/holiday
                 if (stopIdString.equals(stopId)) {
                     if (tripIdsArrayList.contains(tripId)) {
                         String routeString;
@@ -214,7 +232,6 @@ public class ScheduleFragment extends Fragment {
 
                 line = bufferedReader.readLine();
             }
-            //Close reader, catch errors
             bufferedReader.close();
             inputStream.close();
         } catch (IOException e) {
@@ -223,7 +240,6 @@ public class ScheduleFragment extends Fragment {
 
         return routes;
     }
-
 
 
     public String getStopId(String stopCode) {
